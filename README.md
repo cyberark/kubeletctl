@@ -1,3 +1,4 @@
+[![GitHub release][release-img]][release]
 [![License][license-img]][license]
 
 ## Overview
@@ -66,5 +67,9 @@ This repository is licensed under Apache License 2.0 - see [`LICENSE`](LICENSE) 
 For more comments, suggestions or questions, you can contact Eviatar Gerzi ([@g3rzi](https://twitter.com/g3rzi)) from CyberArk Labs.
 You can find more projects developed by us in https://github.com/cyberark/.
 
+[release-img]: https://img.shields.io/github/release/cyberark/kubeletctl.svg
+[release]: https://github.com/cyberark/kubeletctl/releases
+
 [license-img]: https://img.shields.io/github/license/cyberark/kubeletctl.svg
 [license]: https://github.com/cyberark/kubeletctl/blob/master/LICENSE
+
