@@ -44,6 +44,9 @@ Use "kubeletctl [command] --help" for more information about a command.
 
 To view the details on each command or subcommand use the `-h`\\`--help` switch.
 
+## Demo
+![kubeletctl](https://github.com/cyberark/kubeletctl/blob/assets/kubeletctl_gif2.gif)
+
 ## Contributing
 
 We welcome contributions of all kinds to this repository.  
@@ -56,6 +59,7 @@ This repository is licensed under Apache License 2.0 - see [`LICENSE`](LICENSE) 
 
 ## Share Your Thoughts And Feedback
 For more comments, suggestions or questions, you can contact Eviatar Gerzi ([@g3rzi](https://twitter.com/g3rzi)) from CyberArk Labs.
+You can find more projects developed by us in https://github.com/cyberark/.
 
 [license-img]: https://img.shields.io/github/license/cyberark/kubeletctl.svg
 [license]: https://github.com/cyberark/kubeletctl/blob/master/LICENSE
