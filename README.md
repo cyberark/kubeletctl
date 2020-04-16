@@ -4,6 +4,7 @@
 Kubeletctl is a command line tool that implement kubelet's API.  
 Part of kubelet's API is documented but most of it is not.  
 This tool covers all the documented and undocumented APIs.
+The full list of all kubelet's API can be view through the tool or this [API table](https://github.com/cyberark/kubeletctl/blob/master/API_TABLE.md).
 
 ## Usage
 kubeletctl works similar to kubectl, use the following syntax to run commands:  
@@ -17,26 +18,30 @@ Available Commands:
   configz       Return kubelet's configuration.
   containerLogs Return container log
   cri           Run commands inside a container through the Container Runtime Interface (CRI)
-  debug         Return pprof information
+  debug         Return debug information (pprof or flags)
   exec          Run commands inside a container
+  healthz       Check the state of the node
   help          Help about any command
   log           Return the log from the node.
   metrics       Return information about node CPU and memory usage
   pods          Get list of pods on the node
   portForward   Attach to a container
-  resource      Return information about node resources
   run           Run commands inside a container
   runningpods   Returns all pods running on kubelet from looking at the container runtime cache.
+  scan          Scans for nodes with opened kubelet API
   spec          Cached MachineInfo returned by cadvisor
   stats         Return performance stats of node, pods and containers.
+  version       Print the version of the kubeletctl
 
 Flags:
+      --cidr string        A network of IP addresses (Example: x.x.x.x/24)
   -c, --container string   container
   -h, --help               help for kubeletctl
   -n, --namespace string   pod namespace
   -p, --pod string         container
       --port string        Kubelet's port, default is 10250
-  -s, --server string      Server address (format: <server_IP>)
+  -r, --raw                Prints raw data
+  -s, --server string      Server address (format: x.x.x.x. For Example: 123.123.123.123)
   -u, --uid string         container
 
 Use "kubeletctl [command] --help" for more information about a command.
