@@ -25,13 +25,21 @@ import (
 // summaryCmd represents the summary command
 var summaryCmd = &cobra.Command{
 	Use:   "summary",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Return performance stats summary of node, pods and containers.",
+	Long: `Description:
+  Return performance stats summary of node, pods and containers.
+  
+  HTTP requests:
+    GET /stats/summary
+    GET /stats/summary?only_cpu_and_memory=true
+  
+  Example for usage:
+    // Query only the cpu and memory fields
+    kubeletctl stats summary --only-cpu-mem
+  
+  With curl:
+    curl -k https://<node_ip>:10250/stats/summary
+    curl -k https://<node_ip>:10250/stats/summary?only_cpu_and_memory=true`,
 	Run: func(cmd2 *cobra.Command, args []string) {
 		//fmt.Println("summary called")
 		apiPathUrl := cmd.ServerFullAddressGlobal + api.STATS_SUMMARY
@@ -43,5 +51,8 @@ to quickly create a Cobra application.`,
 var onlyCpuAndMemoryFlag bool
 func init() {
 	statsCmd.AddCommand(summaryCmd)
+	// TODO: maybe instead of using the flag, let the use of arguments and it will be scalability
+	// Is this is the only flag or there are more ?
+	// https://github.com/kubernetes/kubernetes/blob/4fda1207e347af92e649b59d60d48c7021ba0c54/pkg/kubelet/metrics/metrics.go#L34-L87
 	summaryCmd.PersistentFlags().BoolVarP(&onlyCpuAndMemoryFlag, "only-cpu-mem", "", false, "Added the query \"?only_cpu_and_memory=true\" to the request")
 }

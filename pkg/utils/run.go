@@ -121,6 +121,7 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 	// start listening for any results over the resultsChan
 	// once we get a Result append it to the Result slice
 	var count int
+	podNumber := 1
 	numberOfSpaces := "   "
 	for {
 		result := <-resultsChan
@@ -131,12 +132,13 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 		}
 		if result.StatusCode == http.StatusOK {
 			var sb strings.Builder
-			sb.WriteString(fmt.Sprintf("%d. Pod: %s\n", count, result.PodInfo.PodName))
+			sb.WriteString(fmt.Sprintf("%d. Pod: %s\n", podNumber, result.PodInfo.PodName))
 			sb.WriteString(fmt.Sprintf("%sNamespace: %s\n", numberOfSpaces, result.PodInfo.Namespace))
 			sb.WriteString(fmt.Sprintf("%sContainer: %s\n", numberOfSpaces, result.PodInfo.ContainerName))
 			sb.WriteString(fmt.Sprintf("%sUrl: %s\n", numberOfSpaces, result.PodInfo.Url))
 			sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", numberOfSpaces, result.Output))
 			fmt.Println(sb.String())
+			podNumber += 1
 		}
 
 		// if we've reached the expected amount of runPodsInfo then stop
