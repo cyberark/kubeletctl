@@ -5,7 +5,7 @@ package api
 // https://github.com/kubernetes/client-go/blob/master/INSTALL.md#enabling-go-modules
 // set GO111MODULE=on
 // go mod init
-// go get k8s.i/client-go@master
+// go get k8s.io/client-go@master
 // go build
 
 import (

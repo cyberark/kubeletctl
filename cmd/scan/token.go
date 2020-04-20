@@ -46,4 +46,5 @@ var tokenCmd = &cobra.Command{
 
 func init() {
 	scanCmd.AddCommand(tokenCmd)
+	//TODO: add flag to check for token permissions, the module is already implemented in kubetok
 }

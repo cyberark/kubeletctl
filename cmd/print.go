@@ -75,3 +75,5 @@ func PrintPrettyHttpResponse(resp *http.Response, err error) {
 		fmt.Printf("[*] Message: %s\n", bodyString)
 	}
 }
+
+

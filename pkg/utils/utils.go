@@ -19,8 +19,6 @@ func AreNamespacePodAndContainerFlagsSet(namespace string, pod string, contianer
 	return namespace != "" && pod != "" && contianer != ""
 }
 
-
-
 // Taken from kubetok
 func getDecodedJwtToken(tokenString string) *jwt.MapClaims {
 	claims := jwt.MapClaims{}
@@ -52,5 +50,4 @@ func PrintDecodedToken(tokenString string) {
 	twOuter.SetTitle("Decoded JWT token")
 	twOuter.Style().Options.SeparateRows = true
 	fmt.Println(twOuter.Render())
-
 }
