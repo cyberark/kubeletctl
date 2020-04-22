@@ -121,21 +121,24 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 	// once we get a Result append it to the Result slice
 	var count int
 	podNumber := 1
-	numberOfSpaces := "   "
+	spacesString := "   "
 	for {
 		result := <-resultsChan
 
-		count += 1
+		// If we have more than 1 digit, we need to add more spaces to straight the lines
 		if count > 9 {
-			numberOfSpaces = "    "
+			spacesString = "    "
+		} else if count > 99 {
+			spacesString = "     "
 		}
+
 		if result.StatusCode == http.StatusOK {
 			var sb strings.Builder
 			sb.WriteString(fmt.Sprintf("%d. Pod: %s\n", podNumber, result.PodInfo.PodName))
-			sb.WriteString(fmt.Sprintf("%sNamespace: %s\n", numberOfSpaces, result.PodInfo.Namespace))
-			sb.WriteString(fmt.Sprintf("%sContainer: %s\n", numberOfSpaces, result.PodInfo.ContainerName))
-			sb.WriteString(fmt.Sprintf("%sUrl: %s\n", numberOfSpaces, result.PodInfo.Url))
-			sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", numberOfSpaces, result.Output))
+			sb.WriteString(fmt.Sprintf("%sNamespace: %s\n", spacesString, result.PodInfo.Namespace))
+			sb.WriteString(fmt.Sprintf("%sContainer: %s\n", spacesString, result.PodInfo.ContainerName))
+			sb.WriteString(fmt.Sprintf("%sUrl: %s\n", spacesString, result.PodInfo.Url))
+			sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", spacesString, result.Output))
 			fmt.Println(sb.String())
 
 
@@ -217,26 +220,26 @@ func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
 	// once we get a Result append it to the Result slice
 	var count int
 	podNumber := 1
-	numberOfSpaces := "   "
+	spacesString := "   "
 	for {
 		result := <-resultsChan
 
 		count += 1
 
 		// If we have more than 1 digit, we need to add more spaces to straight the lines
-		// And what if we will have more than 2 digits?
-		// You mean, a node with more than 99 pods and containers together? nah.. :)
 		if count > 9 {
-			numberOfSpaces = "    "
+			spacesString = "    "
+		} else if count > 99 {
+			spacesString = "     "
 		}
 
 		if result.StatusCode == http.StatusOK {
 			var sb strings.Builder
 			sb.WriteString(fmt.Sprintf("%d. Pod: %s\n", podNumber, result.PodInfo.PodName))
-			sb.WriteString(fmt.Sprintf("%sNamespace: %s\n", numberOfSpaces, result.PodInfo.Namespace))
-			sb.WriteString(fmt.Sprintf("%sContainer: %s\n", numberOfSpaces, result.PodInfo.ContainerName))
-			sb.WriteString(fmt.Sprintf("%sUrl: %s\n", numberOfSpaces, result.PodInfo.Url))
-			sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", numberOfSpaces, result.Output))
+			sb.WriteString(fmt.Sprintf("%sNamespace: %s\n", spacesString, result.PodInfo.Namespace))
+			sb.WriteString(fmt.Sprintf("%sContainer: %s\n", spacesString, result.PodInfo.ContainerName))
+			sb.WriteString(fmt.Sprintf("%sUrl: %s\n", spacesString, result.PodInfo.Url))
+			sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", spacesString, result.Output))
 			fmt.Println(sb.String())
 
 			PrintDecodedToken(result.Output)
