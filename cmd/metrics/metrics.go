@@ -16,19 +16,22 @@ limitations under the License.
 package metrics
 
 import (
+	"github.com/spf13/cobra"
 	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
-
-	"github.com/spf13/cobra"
 )
 
 // metricsCmd represents the metrics command
+// mertrics
 var metricsCmd = &cobra.Command{
 	Use:   "metrics",
-	Short: "Return information about node CPU and memory usage",
+	Short: "Return resource usage metrics (such as container CPU, memory usage, etc.)",
 	Long: `Description:
-  Return information about node CPU and memory usage.
+  Return resource usage metrics (such as container CPU, memory usage, etc.).
   
+  The metrics print all the metrics information and an explanation before each metrics.
+  The start of the explanation starts with "# HELP", you can view all of them by greping "# HELP" when it prints
+
   HTTP requests: 
     GET /metrics
     GET /metrics/cadvisor

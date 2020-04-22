@@ -26,9 +26,9 @@ import (
 // statsCmd represents the stats command
 var statsCmd = &cobra.Command{
 	Use:   "stats",
-	Short: "Return performance stats of node, pods and containers.",
+	Short: "Return statistical information for the resources in the node.",
 	Long: `Description:
-  Return performance stats of containers.
+  Return statistical information for the resources in the node.
   
   HTTP requests: 
     GET /stats
