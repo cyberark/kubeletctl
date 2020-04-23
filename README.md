@@ -53,6 +53,25 @@ To view the details on each command or subcommand use the `-h`\\`--help` switch.
 ## Demo
 ![kubeletctl](https://github.com/cyberark/kubeletctl/blob/assets/kubeletctl_gif2.gif)
 
+
+
+## Build  
+To build the project run:  
+```
+go build -ldflags "-s -w"
+```
+
+## Build with Dockerfile locally
+You can use the attached docker file to build a local image by running:  
+```
+docker build -t kubeletctl -f Dockerfile .
+```
+
+Then run:  
+```
+docker run -it --rm kubeletctl
+```
+
 ## Contributing
 
 We welcome contributions of all kinds to this repository.  
