@@ -5,15 +5,7 @@
 Kubeletctl is a command line tool that implement kubelet's API.  
 Part of kubelet's API is documented but most of it is not.  
 This tool covers all the documented and undocumented APIs.
-The full list of all kubelet's API can be view through the tool or this [API table](https://github.com/cyberark/kubeletctl/blob/master/API_TABLE.md).  
-
-## What can it do ?
-- Run any kubelet API call 
-- Scan for nodes with opened kubelet API
-- Scan for containers with RCE
-- Run a command on all the available containers by kubelet at the same time
-- Get service account tokens from all available containers by kubelet
-- Nice printing :)
+The full list of all kubelet's API can be view through the tool or this [API table](https://github.com/cyberark/kubeletctl/blob/master/API_TABLE.md).
 
 ## Usage
 kubeletctl works similar to kubectl, use the following syntax to run commands:  

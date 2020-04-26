@@ -3,6 +3,11 @@ package api
 import (
 	"bytes"
 	"crypto/tls"
+	"crypto/x509"
+	"io/ioutil"
+	restclient "k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+	"log"
 	"net/http"
 	"time"
 )
@@ -41,6 +46,67 @@ func InitHttpClient() {
 		Timeout: time.Second * 20,
 	}
 }
+
+func getHttpTransportWithCertificates(config *restclient.Config, insecure bool) *http.Transport {
+	var cert tls.Certificate
+	var err error
+	// TODO: need to handle a rare case where cert is file and key is data and the opposite.
+	// Load client cert
+	if config.TLSClientConfig.CertFile != "" {
+		cert, err = tls.LoadX509KeyPair(config.TLSClientConfig.CertFile, config.TLSClientConfig.KeyFile)
+	} else {
+		cert, err = tls.X509KeyPair(config.TLSClientConfig.CertData, config.TLSClientConfig.KeyData)
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Load CA cert
+	var caCert []byte
+	if config.TLSClientConfig.CAFile != "" {
+		caCert, err = ioutil.ReadFile(config.TLSClientConfig.CAFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		caCert = config.TLSClientConfig.CAData
+	}
+
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+
+	tr := &http.Transport{
+		MaxIdleConns:       10,
+		IdleConnTimeout:    30 * time.Second,
+		DisableCompression: true,
+		TLSClientConfig: &tls.Config{
+			Certificates: []tls.Certificate{cert},
+			RootCAs:      caCertPool,
+			InsecureSkipVerify: insecure, },
+	}
+
+	return tr
+}
+
+func InitGlobalClientFromFile(kubeconfig string) {
+	// use the current context in kubeconfig
+	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	insecure := true;
+	tr := getHttpTransportWithCertificates(config, insecure)
+	GlobalClient = &http.Client{
+		Transport: tr,
+		Timeout: time.Second * 20,
+	}
+
+}
+
 
 func GetRequest(client *http.Client, url string) (*http.Response, error){
 	req, _ := http.NewRequest("GET", url, nil)

@@ -15,6 +15,7 @@ var (
 	ServerIpAddressFlag     string
 	ServerFullAddressGlobal string
 	PodUidFlag              string
+	KubeConfigFlag			string
 	//BodyContentFlag         string
 	RawFlag 				bool
 )
@@ -71,6 +72,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&ContainerFlag, "container", "c", "", "container")
 	RootCmd.PersistentFlags().StringVarP(&PodFlag, "pod", "p", "", "container")
 	RootCmd.PersistentFlags().StringVarP(&PodUidFlag, "uid", "u", "", "container")
+	RootCmd.PersistentFlags().StringVarP(&KubeConfigFlag, "config", "k", "", "KubeConfig file")
 	RootCmd.PersistentFlags().BoolVarP(&RawFlag, "raw", "r", false, "Prints raw data")
 	//RootCmd.PersistentFlags().StringVarP(&BodyContentFlag, "body", "b", "", "This is the body message. Should be used in POST or PUT requests.")
 
@@ -94,7 +96,11 @@ func initConfig(){
 		NamespaceFlag = "default"
 	}
 
-	ServerFullAddressGlobal = fmt.Sprintf("https://%s:%s", ServerIpAddressFlag, PortFlag)
+	if KubeConfigFlag != "" {
+		api.InitGlobalClientFromFile(KubeConfigFlag)
+	} else {
+		api.InitHttpClient()
+	}
 
-	api.InitHttpClient()
+	ServerFullAddressGlobal = fmt.Sprintf("https://%s:%s", ServerIpAddressFlag, PortFlag)
 }
