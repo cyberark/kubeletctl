@@ -19,7 +19,7 @@ RUN set -ex \
 
 # Use this line if you want to download it while building the image. 
 # Make sure to use the most recent release build
-RUN wget https://github.com/cyberark/kubeletctl/releases/download/v1.0/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
+RUN wget https://github.com/cyberark/kubeletctl/releases/download/v1.1/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
 
 # Download the latest release of kubeletctl_linux_amd64 from https://github.com/cyberark/kubeletctl/releases and then copy the file
 #COPY ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl 
