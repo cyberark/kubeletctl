@@ -15,6 +15,20 @@ The full list of all kubelet's API can be view through the tool or this [API tab
 - Get service account tokens from all available containers by kubelet
 - Nice printing :)
 
+## Installation  
+On the [releases](https://github.com/cyberark/kubeletctl/releases) page you will find the latest releases with links based on the operating system.  
+
+For the following examples, we will use the kubeletctl_linux_amd64 binary link. If you plan to use other link, change it accordingly.   
+### wget
+```
+wget https://github.com/cyberark/kubeletctl/releases/download/v1.1/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
+```  
+
+### curl
+```
+curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.1/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl 
+```
+
 ## Usage
 kubeletctl works similar to kubectl, use the following syntax to run commands:  
 ```
