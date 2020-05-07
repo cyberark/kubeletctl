@@ -21,12 +21,12 @@ On the [releases](https://github.com/cyberark/kubeletctl/releases) page you will
 For the following examples, we will use the kubeletctl_linux_amd64 binary link. If you plan to use other link, change it accordingly.   
 ### wget
 ```
-wget https://github.com/cyberark/kubeletctl/releases/download/v1.1/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
+wget https://github.com/cyberark/kubeletctl/releases/download/v1.2/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
 ```  
 
 ### curl
 ```
-curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.1/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl 
+curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.2/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl 
 ```
 
 ## Usage
@@ -46,26 +46,28 @@ Available Commands:
   healthz       Check the state of the node
   help          Help about any command
   log           Return the log from the node.
-  metrics       Return information about node CPU and memory usage
+  metrics       Return resource usage metrics (such as container CPU, memory usage, etc.)
   pods          Get list of pods on the node
   portForward   Attach to a container
   run           Run commands inside a container
   runningpods   Returns all pods running on kubelet from looking at the container runtime cache.
   scan          Scans for nodes with opened kubelet API
   spec          Cached MachineInfo returned by cadvisor
-  stats         Return performance stats of node, pods and containers.
+  stats         Return statistical information for the resources in the node.
   version       Print the version of the kubeletctl
 
 Flags:
       --cidr string        A network of IP addresses (Example: x.x.x.x/24)
-  -c, --container string   container
+  -k, --config string      KubeConfig file
+  -c, --container string   Container name
   -h, --help               help for kubeletctl
+      --http               Use HTTP (default is HTTPS)
   -n, --namespace string   pod namespace
-  -p, --pod string         container
+  -p, --pod string         Pod name
       --port string        Kubelet's port, default is 10250
   -r, --raw                Prints raw data
   -s, --server string      Server address (format: x.x.x.x. For Example: 123.123.123.123)
-  -u, --uid string         container
+  -u, --uid string         Pod UID
 
 Use "kubeletctl [command] --help" for more information about a command.
 ```
