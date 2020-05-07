@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
+	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
 	"log"
 	"net"
@@ -23,10 +24,6 @@ func FindContainersWithRCE(nodeIP string) Node {
 	return node
 }
 
-const KUBELET_DEFAULT_PORT = "10250"
-
-
-
 // TODO: improve to multi-threaded
 func checkPodsForRCE(nodeIP string, pods v1.PodList) []Pod {
 	command := "cmd=ls /"
@@ -36,7 +33,7 @@ func checkPodsForRCE(nodeIP string, pods v1.PodList) []Pod {
 		var podContainers []Container
 		for _, container := range pod.Spec.Containers {
 			containerRCERun := false
-			apiPathUrl := fmt.Sprintf("https://%s:%s%s/%s/%s/%s", nodeIP, KUBELET_DEFAULT_PORT, api.RUN, pod.Namespace, pod.Name, container.Name)
+			apiPathUrl := fmt.Sprintf("%s://%s:%s%s/%s/%s/%s", cmd.ProtocolScheme, nodeIP, cmd.PortFlag, api.RUN, pod.Namespace, pod.Name, container.Name)
 			resp, err := api.PostRequest(api.GlobalClient, apiPathUrl, []byte(command))
 
 			// TODO: check if this check is enough
@@ -64,7 +61,7 @@ func checkPodsForRCE(nodeIP string, pods v1.PodList) []Pod {
 func GetPodListFromNodeIP(nodeIP string) (v1.PodList, error) {
 	var pods v1.PodList
 
-	kubeletPodsUrl := fmt.Sprintf("https://%s:%s%s", nodeIP, KUBELET_DEFAULT_PORT, api.PODS)
+	kubeletPodsUrl := fmt.Sprintf("%s://%s:%s%s", cmd.ProtocolScheme, nodeIP, cmd.PortFlag, api.PODS)
 	resp, err := api.GetRequest(api.GlobalClient, kubeletPodsUrl)
 
 	// TODO: maybe send the error from this function
@@ -92,7 +89,7 @@ func getNodeWithPodsRCECheck(nodeIP string) Node {
 		Pods: nil,
 	}
 	var pods v1.PodList
-	kubeletPodsUrl := fmt.Sprintf("https://%s:%s%s", nodeIP, KUBELET_DEFAULT_PORT, api.PODS)
+	kubeletPodsUrl := fmt.Sprintf("%s://%s:%s%s", cmd.ProtocolScheme, nodeIP, cmd.PortFlag, api.PODS)
 	resp, err := api.GetRequest(api.GlobalClient, kubeletPodsUrl)
 
 	// TODO: maybe send the error from this function
@@ -233,19 +230,19 @@ func boundedParallelGet(urls []string, concurrencyLimit int, scanMode ScanMode) 
 
 			// TODO: should we change 10250 to variable in case the kubelet will be in different port ?
 			// If not we should consider a constant
-			if isPortOpen(ipAddress, []string{"10250"}){
+			if isPortOpen(ipAddress, []string{cmd.PortFlag}){
 
 				if scanMode == SCAN_MODE_RCE {
 					node = FindContainersWithRCE(ipAddress)
 				} else {
-					kubeletUrlAddress = fmt.Sprintf("https://%s:10250%s", ipAddress, api.HEALTHZ)
+					kubeletUrlAddress = fmt.Sprintf("%s://%s:%s%s", cmd.ProtocolScheme, ipAddress, cmd.PortFlag, api.HEALTHZ)
 					// send the request and put the response in a Result struct
 					// along with the index so we can sort them later along with
 					// any error that might have occoured
 					resp, err = api.GetRequest(api.GlobalClient, kubeletUrlAddress)
 					if resp != nil {
 						statusCode = resp.StatusCode
-						kubeletUrlAddress = fmt.Sprintf("https://%s:10250", ipAddress)
+						kubeletUrlAddress = fmt.Sprintf("%s://%s:%s", cmd.ProtocolScheme, ipAddress, cmd.PortFlag)
 					}
 				}
 			}

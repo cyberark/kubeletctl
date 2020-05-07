@@ -49,7 +49,7 @@ var specCmd = &cobra.Command{
 		resp, err := api.GetRequest(api.GlobalClient, apiPathUrl)
 		cmd.PrintPrettyHttpResponse(resp, err)
 		if resp != nil && resp.StatusCode == 404 {
-		    println("[*] kubelet exposes the endpoint /spec only if cadvisor endpoints are enabled when the kubelet starts")
+			println("[*] kubelet exposes the endpoint /spec only if cadvisor endpoints are enabled when the kubelet starts")
 		}
 	},
 }

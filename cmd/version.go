@@ -31,7 +31,7 @@ func printLogo() {
 |_| \_)____/|____/|_____)\_)_____)  \__)____)  \__)\_)
 
 Author: Eviatar Gerzi
-Version: 1.1
+Version: 1.2
 `
 	fmt.Println(logo)
 }

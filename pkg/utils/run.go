@@ -8,6 +8,7 @@ package utils
 import (
 	"fmt"
 	"io/ioutil"
+	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
 	"net/http"
 	"os"
@@ -24,7 +25,7 @@ func GetPodsForRunCommand(nodeIPAddress string) []RunPodInfo {
 	var urls []RunPodInfo
 	for _, pod := range pods.Items {
 		for _, container := range pod.Spec.Containers {
-			apiPathUrl := fmt.Sprintf("https://%s:%s%s/%s/%s/%s", nodeIPAddress, KUBELET_DEFAULT_PORT, api.RUN, pod.Namespace, pod.Name, container.Name)
+			apiPathUrl := fmt.Sprintf("%s://%s:%s%s/%s/%s/%s", cmd.ProtocolScheme, nodeIPAddress, cmd.PortFlag, api.RUN, pod.Namespace, pod.Name, container.Name)
 
 			urls = append(urls, RunPodInfo{
 				Url:           apiPathUrl,

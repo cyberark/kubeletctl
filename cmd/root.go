@@ -16,6 +16,8 @@ var (
 	ServerFullAddressGlobal string
 	PodUidFlag              string
 	KubeConfigFlag			string
+	ProtocolScheme          string
+	HttpFlag				bool
 	//BodyContentFlag         string
 	RawFlag 				bool
 )
@@ -69,23 +71,24 @@ func init() {
 
 	RootCmd.PersistentFlags().StringVarP(&PortFlag, "port", "", "", "Kubelet's port, default is 10250")
 	RootCmd.PersistentFlags().StringVarP(&NamespaceFlag, "namespace", "n", "", "pod namespace")
-	RootCmd.PersistentFlags().StringVarP(&ContainerFlag, "container", "c", "", "container")
-	RootCmd.PersistentFlags().StringVarP(&PodFlag, "pod", "p", "", "container")
-	RootCmd.PersistentFlags().StringVarP(&PodUidFlag, "uid", "u", "", "container")
+	RootCmd.PersistentFlags().StringVarP(&ContainerFlag, "container", "c", "", "Container name")
+	RootCmd.PersistentFlags().StringVarP(&PodFlag, "pod", "p", "", "Pod name")
+	RootCmd.PersistentFlags().StringVarP(&PodUidFlag, "uid", "u", "", "Pod UID")
 	RootCmd.PersistentFlags().StringVarP(&KubeConfigFlag, "config", "k", "", "KubeConfig file")
 	RootCmd.PersistentFlags().BoolVarP(&RawFlag, "raw", "r", false, "Prints raw data")
+	RootCmd.PersistentFlags().BoolVarP(&HttpFlag, "http", "", false, "Use HTTP (default is HTTPS)")
 	//RootCmd.PersistentFlags().StringVarP(&BodyContentFlag, "body", "b", "", "This is the body message. Should be used in POST or PUT requests.")
 
 	pf := RootCmd.PersistentFlags()
 	pf.StringVarP(&ServerIpAddressFlag, "server", "s", "", "Server address (format: x.x.x.x. For Example: 123.123.123.123)")
 	//cobra.MarkFlagRequired(pf, "server")
-
-
 }
+
+const KUBELET_DEFAULT_PORT = "10250"
 
 func initConfig(){
 	if PortFlag == "" {
-		PortFlag = "10250"
+		PortFlag = KUBELET_DEFAULT_PORT
 	}
 
 	if ServerIpAddressFlag == "" {
@@ -102,5 +105,10 @@ func initConfig(){
 		api.InitHttpClient()
 	}
 
-	ServerFullAddressGlobal = fmt.Sprintf("https://%s:%s", ServerIpAddressFlag, PortFlag)
+	ProtocolScheme = "https"
+	if HttpFlag {
+		ProtocolScheme = "http"
+	}
+
+	ServerFullAddressGlobal = fmt.Sprintf("%s://%s:%s", ProtocolScheme, ServerIpAddressFlag, PortFlag)
 }
