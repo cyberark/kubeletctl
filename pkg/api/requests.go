@@ -9,6 +9,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -34,11 +35,27 @@ const (
 
 func InitHttpClient() {
 
-	tr := &http.Transport{
-		MaxIdleConns:       10,
-		IdleConnTimeout:    30 * time.Second,
-		DisableCompression: true,
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	insecure := true
+	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		clientcmd.NewDefaultClientConfigLoadingRules(),
+		&clientcmd.ConfigOverrides{},
+	)
+	config, err := kubeConfig.ClientConfig()
+	if err != nil && len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
+		panic(err.Error())
+	}
+
+	var tr *http.Transport
+
+	if config != nil {
+		tr = getHttpTransportWithCertificates(config, insecure)
+	} else {
+		tr = &http.Transport{
+			MaxIdleConns:       10,
+			IdleConnTimeout:    30 * time.Second,
+			DisableCompression: true,
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
+		}
 	}
 
 	GlobalClient = &http.Client{
