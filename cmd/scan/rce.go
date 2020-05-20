@@ -42,7 +42,7 @@ func printNodesWithRCEContainers(nodes []utils.Node) {
 
 				podTemp := ""
 				namespaceTemp := ""
-				if printOnce{
+				if printOnce {
 					podTemp = pod.Name
 					namespaceTemp = pod.Namespace
 					printOnce = false
@@ -72,7 +72,6 @@ func printNodesWithRCEContainers(nodes []utils.Node) {
 	tw.SetAutoIndex(true)
 	fmt.Println(tw.Render())
 }
-
 
 // rceCmd represents the rce command
 var rceCmd = &cobra.Command{

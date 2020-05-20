@@ -13,7 +13,6 @@ import (
 	"time"
 )
 
-
 func FindContainersWithRCE(nodeIP string) Node {
 	/*hosts, Err := getHosts(cidr)
 	if Err != nil {
@@ -29,7 +28,7 @@ func checkPodsForRCE(nodeIP string, pods v1.PodList) []Pod {
 	command := "cmd=ls /"
 	var nodePods []Pod
 
-	for _, pod := range pods.Items{
+	for _, pod := range pods.Items {
 		var podContainers []Container
 		for _, container := range pod.Spec.Containers {
 			containerRCERun := false
@@ -86,7 +85,7 @@ func GetPodListFromNodeIP(nodeIP string) (v1.PodList, error) {
 func getNodeWithPodsRCECheck(nodeIP string) Node {
 	node := Node{
 		IPAddress: nodeIP,
-		Pods: nil,
+		Pods:      nil,
 	}
 	var pods v1.PodList
 	kubeletPodsUrl := fmt.Sprintf("%s://%s:%s%s", cmd.ProtocolScheme, nodeIP, cmd.PortFlag, api.PODS)
@@ -116,6 +115,7 @@ func getNodeWithPodsRCECheck(nodeIP string) Node {
 
 // TODO: add an option for the user to change it
 const CONCURRENCY_DEFAULT_LIMIT = 50
+
 func FindOpenedKubeletOnNodes(cidr string) []string {
 	hosts, err := getHosts(cidr)
 	if err != nil {
@@ -168,24 +168,25 @@ type Result struct {
 
 type Node struct {
 	IPAddress string
-	Pods []Pod
+	Pods      []Pod
 }
 
 type Pod struct {
-	Name string
-	Namespace string
+	Name       string
+	Namespace  string
 	Containers []Container
 }
 
 type Container struct {
-	Name string
+	Name    string
 	RCEExec bool
-	RCERun bool
+	RCERun  bool
 }
 
 type ScanMode string
+
 const (
-	SCAN_MODE_RCE = "RCE"
+	SCAN_MODE_RCE    = "RCE"
 	SCAN_MODE_HEALTH = "HEALTH"
 )
 
@@ -230,7 +231,7 @@ func boundedParallelGet(urls []string, concurrencyLimit int, scanMode ScanMode) 
 
 			// TODO: should we change 10250 to variable in case the kubelet will be in different port ?
 			// If not we should consider a constant
-			if isPortOpen(ipAddress, []string{cmd.PortFlag}){
+			if isPortOpen(ipAddress, []string{cmd.PortFlag}) {
 
 				if scanMode == SCAN_MODE_RCE {
 					node = FindContainersWithRCE(ipAddress)

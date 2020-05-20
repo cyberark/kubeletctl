@@ -26,7 +26,7 @@ import (
 Spec command is calling getSpec(..) in server.go. Inside this function it calls GetCachedMachineInfo()
 The function GetCachedMachineInfo() is in kubelet_getters.go and returns Kubelet's machineInfo which is cached MachineInfo returned by cadvisor
 
- */
+*/
 
 // specCmd represents the spec command
 var specCmd = &cobra.Command{

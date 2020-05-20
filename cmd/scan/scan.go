@@ -26,7 +26,7 @@ import (
 	"net/http"
 )
 
-func printVulnerableNodes(nodesUrls []string){
+func printVulnerableNodes(nodesUrls []string) {
 	tw := table.NewWriter()
 	tw.AppendHeader(table.Row{"Node IP"})
 
@@ -61,7 +61,7 @@ var scanCmd = &cobra.Command{
 			if len(nodesIPs) > 0 {
 				printVulnerableNodes(nodesIPs)
 			}
-		} else if cmd.ServerIpAddressFlag != ""  {
+		} else if cmd.ServerIpAddressFlag != "" {
 			apiPathUrl := cmd.ServerFullAddressGlobal + api.HEALTHZ
 			resp, err := api.GetRequest(api.GlobalClient, apiPathUrl)
 			if err == nil && resp.StatusCode == http.StatusOK {
@@ -74,6 +74,7 @@ var scanCmd = &cobra.Command{
 }
 
 var cidrFlag string
+
 func init() {
 	cmd.RootCmd.AddCommand(scanCmd)
 	cmd.RootCmd.PersistentFlags().StringVarP(&cidrFlag, "cidr", "", "", "A network of IP addresses (Example: x.x.x.x/24)")
