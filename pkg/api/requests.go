@@ -107,6 +107,26 @@ func InitGlobalClientFromFile(kubeconfig string) {
 
 }
 
+func InitGlobalClientFromCertificatesFiles(serverAddress string, caFile string, certFile string, keyFile string) {
+
+	config := restclient.Config{
+		Host: serverAddress,
+
+		TLSClientConfig: restclient.TLSClientConfig{
+			Insecure: false,
+			CertFile:   certFile,
+			KeyFile:    keyFile,
+			CAFile:     caFile,
+		},
+	}
+
+	insecure := true;
+	tr := getHttpTransportWithCertificates(&config, insecure)
+	GlobalClient = &http.Client{
+		Transport: tr,
+		Timeout: time.Second * 20,
+	}
+}
 
 func GetRequest(client *http.Client, url string) (*http.Response, error){
 	req, _ := http.NewRequest("GET", url, nil)
