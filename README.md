@@ -80,12 +80,20 @@ To view the details on each command or subcommand use the `-h`\\`--help` switch.
 
 
 ## Build  
+Prerequisite:  
+-  [go](https://golang.org/doc/install)
+-  [gox](https://github.com/mitchellh/gox)
 To build the project run:  
 ```
 make 
 ```
 
 This will create `build/kubeletctl_{{.OS}}_{{.Arch}}` binaries.
+
+For Windows users it is possible to use `gox` directly:
+```
+gox -ldflags "-s -w" -osarch linux/amd64 -osarch linux/386 -osarch windows/amd64 -osarch windows/386 -osarch="darwin/amd64"
+```
 
 ## Build with Dockerfile locally
 You can use the attached docker file to build a local image by running:  
