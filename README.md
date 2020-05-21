@@ -83,6 +83,7 @@ To view the details on each command or subcommand use the `-h`\\`--help` switch.
 Prerequisite:  
 -  [go](https://golang.org/doc/install)  
 -  [gox](https://github.com/mitchellh/gox)  
+
 To build the project run:  
 ```
 make 
