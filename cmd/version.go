@@ -40,7 +40,7 @@ Version: 1.3
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version of the kubeletctl",
-	Long: `Print the version of the kubeletctl`,
+	Long:  `Print the version of the kubeletctl`,
 	Run: func(cmd2 *cobra.Command, args []string) {
 		//fmt.Println("version called")
 		printLogo()

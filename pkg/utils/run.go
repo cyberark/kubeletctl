@@ -1,6 +1,5 @@
 package utils
 
-
 // TODO: consider move this file to be under api package.
 // It will cause import cycling because of some of the constants use. Maybe it will be better to move the
 // constant.go to to the pgk folder.
@@ -39,27 +38,24 @@ func GetPodsForRunCommand(nodeIPAddress string) []RunPodInfo {
 	return urls
 }
 
-
-func RunCommandOnAllPodsInANode(nodeIPAddress string, command string){
+func RunCommandOnAllPodsInANode(nodeIPAddress string, command string) {
 	urls := GetPodsForRunCommand(nodeIPAddress)
 	runParallelCommandsOnPods(urls, CONCURRENCY_DEFAULT_LIMIT, command)
 }
 
 type RunPodInfo struct {
-	Url string
-	PodName string
+	Url           string
+	PodName       string
 	ContainerName string
-	Namespace string
+	Namespace     string
 }
 
 type RunOutput struct {
 	StatusCode int
-	PodInfo        RunPodInfo
+	PodInfo    RunPodInfo
 	Err        error
 	Output     string
 }
-
-
 
 func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, command string) []string {
 	// make a slice to hold the results we're expecting
@@ -67,7 +63,6 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 
 	// this buffered channel will block at the concurrency limit
 	semaphoreChan := make(chan struct{}, concurrencyLimit)
-
 
 	// this channel will not block and collect the http request results
 	resultsChan := make(chan *RunOutput)
@@ -106,7 +101,6 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 
 			result := &RunOutput{statusCode, podInfo, err, output}
 
-
 			// now we can send the Result struct through the resultsChan
 			resultsChan <- result
 			// once we're done it's we read from the semaphoreChan which
@@ -116,7 +110,6 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 
 		}(i, podInfo)
 	}
-
 
 	// start listening for any results over the resultsChan
 	// once we get a Result append it to the Result slice
@@ -142,7 +135,6 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 			sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", spacesString, result.Output))
 			fmt.Println(sb.String())
 
-
 			podNumber += 1
 		}
 
@@ -156,7 +148,7 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 	return vulnerableNodes
 }
 
-func GetTokensFromAllPods(nodeIPAddress string){
+func GetTokensFromAllPods(nodeIPAddress string) {
 	urls := GetPodsForRunCommand(nodeIPAddress)
 	getAndPrintTokens(urls, CONCURRENCY_DEFAULT_LIMIT)
 }
@@ -215,7 +207,6 @@ func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
 
 		}(i, podInfo)
 	}
-
 
 	// start listening for any results over the resultsChan
 	// once we get a Result append it to the Result slice

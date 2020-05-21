@@ -23,8 +23,7 @@ import (
 	"strings"
 )
 
-
-func commandMaker(command string, args []string) string{
+func commandMaker(command string, args []string) string {
 	//commandString := "command="
 	commandString := command + "="
 	var fullCommand string
@@ -33,15 +32,13 @@ func commandMaker(command string, args []string) string{
 	for index, command := range commands {
 		fullCommand += commandString + command
 
-		if (len(commands)-1) != index{
+		if (len(commands) - 1) != index {
 			fullCommand += "&"
 		}
 	}
 
 	return fullCommand
 }
-
-
 
 // execCmd represents the exec command
 var execCmd = &cobra.Command{
@@ -81,10 +78,9 @@ var execCmd = &cobra.Command{
 			apiPath = fmt.Sprintf("%s/%s/%s/%s/%s", api.EXEC, cmd.NamespaceFlag, cmd.PodFlag, cmd.PodUidFlag, cmd.ContainerFlag)
 		}
 
-		api.Exec(cmd.ServerIpAddressFlag, cmd.PortFlag, cmd.ServerFullAddressGlobal, apiPath,  commandMaker("command", args),"POST")
+		api.Exec(cmd.ServerIpAddressFlag, cmd.PortFlag, cmd.ServerFullAddressGlobal, apiPath, commandMaker("command", args), "POST")
 	},
 }
-
 
 var execCommandLineFlag string
 

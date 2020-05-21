@@ -17,20 +17,19 @@ var GlobalClient *http.Client
 // a struct to hold the result from each request including an index
 // which will be used for sorting the results after they come in
 type Result struct {
-	Url string
-	res   http.Response
+	Url      string
+	res      http.Response
 	HttpVerb HTTPVerb
-	err   error
+	err      error
 }
 
 type HTTPVerb string
+
 const (
-	GET HTTPVerb = "GET"
-	POST HTTPVerb = "POST"
+	GET    HTTPVerb = "GET"
+	POST   HTTPVerb = "POST"
 	DELETE HTTPVerb = "DELETE"
 )
-
-
 
 func InitHttpClient() {
 
@@ -38,12 +37,12 @@ func InitHttpClient() {
 		MaxIdleConns:       10,
 		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		TLSClientConfig:    &tls.Config{InsecureSkipVerify: true},
 	}
 
 	GlobalClient = &http.Client{
 		Transport: tr,
-		Timeout: time.Second * 20,
+		Timeout:   time.Second * 20,
 	}
 }
 
@@ -76,15 +75,14 @@ func getHttpTransportWithCertificates(config *restclient.Config, insecure bool) 
 	caCertPool := x509.NewCertPool()
 	caCertPool.AppendCertsFromPEM(caCert)
 
-
 	tr := &http.Transport{
 		MaxIdleConns:       10,
 		IdleConnTimeout:    30 * time.Second,
 		DisableCompression: true,
 		TLSClientConfig: &tls.Config{
-			Certificates: []tls.Certificate{cert},
-			RootCAs:      caCertPool,
-			InsecureSkipVerify: insecure, },
+			Certificates:       []tls.Certificate{cert},
+			RootCAs:            caCertPool,
+			InsecureSkipVerify: insecure},
 	}
 
 	return tr
@@ -98,11 +96,11 @@ func InitGlobalClientFromFile(kubeconfig string) {
 		panic(err.Error())
 	}
 
-	insecure := true;
+	insecure := true
 	tr := getHttpTransportWithCertificates(config, insecure)
 	GlobalClient = &http.Client{
 		Transport: tr,
-		Timeout: time.Second * 20,
+		Timeout:   time.Second * 20,
 	}
 
 }
@@ -114,21 +112,21 @@ func InitGlobalClientFromCertificatesFiles(serverAddress string, caFile string, 
 
 		TLSClientConfig: restclient.TLSClientConfig{
 			Insecure: false,
-			CertFile:   certFile,
-			KeyFile:    keyFile,
-			CAFile:     caFile,
+			CertFile: certFile,
+			KeyFile:  keyFile,
+			CAFile:   caFile,
 		},
 	}
 
-	insecure := true;
+	insecure := true
 	tr := getHttpTransportWithCertificates(&config, insecure)
 	GlobalClient = &http.Client{
 		Transport: tr,
-		Timeout: time.Second * 20,
+		Timeout:   time.Second * 20,
 	}
 }
 
-func GetRequest(client *http.Client, url string) (*http.Response, error){
+func GetRequest(client *http.Client, url string) (*http.Response, error) {
 	req, _ := http.NewRequest("GET", url, nil)
 
 	//req.Header.Set("Authorization", "Bearer " + BEARER_TOKEN)
@@ -137,7 +135,7 @@ func GetRequest(client *http.Client, url string) (*http.Response, error){
 	return resp, err
 }
 
-func PutRequest(client *http.Client, url string, bodyData []byte) (*http.Response, error){
+func PutRequest(client *http.Client, url string, bodyData []byte) (*http.Response, error) {
 	req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(bodyData))
 
 	req.Header.Set("Content-Type", "text/plain")
@@ -146,7 +144,7 @@ func PutRequest(client *http.Client, url string, bodyData []byte) (*http.Respons
 	return resp, err
 }
 
-func PostRequest(client *http.Client, url string, bodyData []byte) (*http.Response, error){
+func PostRequest(client *http.Client, url string, bodyData []byte) (*http.Response, error) {
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(bodyData))
 	//req.Header.Set("Authorization", "Bearer " + BEARER_TOKEN)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")

@@ -21,8 +21,6 @@ import (
 	"kubeletctl/pkg/api"
 )
 
-
-
 // criCmd represents the cri command
 var criCmd = &cobra.Command{
 	Use:   "cri",

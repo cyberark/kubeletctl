@@ -43,7 +43,6 @@ var podsCmd = &cobra.Command{
 	Run: func(cmd2 *cobra.Command, args []string) {
 		//fmt.Println("pods called")
 
-
 		apiPathUrl := cmd.ServerFullAddressGlobal + api.PODS
 		resp, err := api.GetRequest(api.GlobalClient, apiPathUrl)
 

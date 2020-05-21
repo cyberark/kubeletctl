@@ -22,7 +22,7 @@ var (
 	keyFlag                 string
 	HttpFlag                bool
 	//BodyContentFlag         string
-	RawFlag 				bool
+	RawFlag bool
 )
 
 // TODO: Consider the use of "go-prompt" for auto-completion of dynamic resources like pods
@@ -96,7 +96,7 @@ func init() {
 
 const KUBELET_DEFAULT_PORT = "10250"
 
-func initConfig(){
+func initConfig() {
 	if PortFlag == "" {
 		PortFlag = KUBELET_DEFAULT_PORT
 	}

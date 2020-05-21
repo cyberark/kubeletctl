@@ -19,12 +19,12 @@ func getHosts(cidr string) ([]string, error) {
 	var ipAddresses []string
 
 	switch {
-		case lenIPs < 2:
-			ipAddresses = ips
+	case lenIPs < 2:
+		ipAddresses = ips
 
-		default:
-			// Shouldn't be panic here because we are checking the lenIPs before
-			ipAddresses = ips[1 : len(ips)-1]
+	default:
+		// Shouldn't be panic here because we are checking the lenIPs before
+		ipAddresses = ips[1 : len(ips)-1]
 	}
 
 	return ipAddresses, nil

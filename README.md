@@ -82,8 +82,10 @@ To view the details on each command or subcommand use the `-h`\\`--help` switch.
 ## Build  
 To build the project run:  
 ```
-go build -ldflags "-s -w"
+make 
 ```
+
+This will create `build/kubeletctl_{{.OS}}_{{.Arch}}` binaries.
 
 ## Build with Dockerfile locally
 You can use the attached docker file to build a local image by running:  

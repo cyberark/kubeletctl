@@ -101,6 +101,7 @@ var debugCmd = &cobra.Command{
 }
 
 var secondsFlag string
+
 func init() {
 	cmd.RootCmd.AddCommand(debugCmd)
 	debugCmd.PersistentFlags().StringVarP(&secondsFlag, "seconds", "", "", "Number of seconds to look. Used in debug profile and trace")
