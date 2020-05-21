@@ -21,12 +21,12 @@ On the [releases](https://github.com/cyberark/kubeletctl/releases) page you will
 For the following examples, we will use the kubeletctl_linux_amd64 binary link. If you plan to use other link, change it accordingly.   
 ### wget
 ```
-wget https://github.com/cyberark/kubeletctl/releases/download/v1.3/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
+wget https://github.com/cyberark/kubeletctl/releases/download/v1.4/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
 ```  
 
 ### curl
 ```
-curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.3/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl 
+curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.4/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl 
 ```
 
 ## Usage
