@@ -16,12 +16,9 @@ limitations under the License.
 package debug
 
 import (
-	"fmt"
+	"github.com/spf13/cobra"
 	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
-	"os"
-
-	"github.com/spf13/cobra"
 )
 
 // debugCmd represents the debug command
@@ -82,12 +79,10 @@ var debugCmd = &cobra.Command{
 
 		var apiPathUrl string
 		var inputArgs string
-		if args == nil {
-			fmt.Println("[*] No debug profile was specified")
-			os.Exit(1)
-		} else {
-			inputArgs = args[0]
-		}
+
+		cmd.CheckForEmptyArgsAndExit(args, "[*] No debug profile was specified")
+
+		inputArgs = args[0]
 
 		if secondsFlag != "" {
 			apiPathUrl = cmd.ServerFullAddressGlobal + api.DEBUG + "/" + inputArgs + "?seconds=" + secondsFlag

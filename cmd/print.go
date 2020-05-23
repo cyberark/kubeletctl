@@ -24,6 +24,13 @@ func isJSONString(s string) bool {
 	return json.Unmarshal([]byte(s), &js) == nil
 }
 
+func CheckForEmptyArgsAndExit(args []string, message string){
+	if len(args) == 0 {
+		fmt.Println(message)
+		os.Exit(1)
+	}
+}
+
 func PrintPods(podList v1.PodList) {
 	tw := table.NewWriter()
 	tw.AppendHeader(table.Row{"Pod", "Namespace", "Containers"})

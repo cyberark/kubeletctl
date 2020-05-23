@@ -71,6 +71,8 @@ var execCmd = &cobra.Command{
 		//fmt.Println("exec called")
 		// https://bugzilla.redhat.com/show_bug.cgi?id=1509228
 
+		cmd.CheckForEmptyArgsAndExit(args, "[*] No arguments for exec command were specified")
+
 		var apiPath string
 		if cmd.PodUidFlag == "" {
 			apiPath = fmt.Sprintf("%s/%s/%s/%s", api.EXEC, cmd.NamespaceFlag, cmd.PodFlag, cmd.ContainerFlag)
