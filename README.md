@@ -1,5 +1,6 @@
 [![GitHub release][release-img]][release]
 [![License][license-img]][license]
+[![Go version][shield-go-version]][go-version]
 
 ## Overview
 Kubeletctl is a command line tool that implement kubelet's API.  
@@ -127,3 +128,5 @@ You can find more projects developed by us in https://github.com/cyberark/.
 [license-img]: https://img.shields.io/github/license/cyberark/kubeletctl.svg
 [license]: https://github.com/cyberark/kubeletctl/blob/master/LICENSE
 
+[shield-go-version]: https://img.shields.io/github/go-mod/go-version/cyberark/kubeletctl
+[go-version]: https://github.com/cyberark/kubeletctl/blob/master/go.mod
