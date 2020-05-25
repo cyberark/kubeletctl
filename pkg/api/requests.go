@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"fmt"
 )
 
 var GlobalClient *http.Client
