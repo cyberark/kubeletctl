@@ -15,11 +15,14 @@ var (
 	ServerIpAddressFlag     string
 	ServerFullAddressGlobal string
 	PodUidFlag              string
-	KubeConfigFlag			string
+	KubeConfigFlag          string
 	ProtocolScheme          string
-	HttpFlag				bool
+	caFlag                  string
+	certFlag                string
+	keyFlag                 string
+	HttpFlag                bool
 	//BodyContentFlag         string
-	RawFlag 				bool
+	RawFlag bool
 )
 
 // TODO: Consider the use of "go-prompt" for auto-completion of dynamic resources like pods
@@ -48,6 +51,9 @@ var RootCmd = &cobra.Command{
 
     // Run "ls /" command on all existing pods in a node
     kubeletctl.exe run "ls /" --all-pods --server 123.123.123.123 
+
+    // With certificates
+    kubeletctl.exe pods -s <node_ip> --cacert C:\Users\myuser\certs\ca.crt --cert C:\Users\myuser\certs\kubelet-client-current.pem --key C:\Users\myuser\certs\kubelet-client-current.pem
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// Do Stuff Here
@@ -79,6 +85,10 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(&HttpFlag, "http", "", false, "Use HTTP (default is HTTPS)")
 	//RootCmd.PersistentFlags().StringVarP(&BodyContentFlag, "body", "b", "", "This is the body message. Should be used in POST or PUT requests.")
 
+	RootCmd.PersistentFlags().StringVarP(&caFlag, "cacert", "", "", "CA certificate (example: /etc/kubernetes/pki/ca.crt )")
+	RootCmd.PersistentFlags().StringVarP(&certFlag, "cert", "", "", "Private key (example: /var/lib/kubelet/pki/kubelet-client-current.pem)")
+	RootCmd.PersistentFlags().StringVarP(&keyFlag, "key", "", "", "Digital certificate (example: /var/lib/kubelet/pki/kubelet-client-current.pem)")
+
 	pf := RootCmd.PersistentFlags()
 	pf.StringVarP(&ServerIpAddressFlag, "server", "s", "", "Server address (format: x.x.x.x. For Example: 123.123.123.123)")
 	//cobra.MarkFlagRequired(pf, "server")
@@ -86,7 +96,7 @@ func init() {
 
 const KUBELET_DEFAULT_PORT = "10250"
 
-func initConfig(){
+func initConfig() {
 	if PortFlag == "" {
 		PortFlag = KUBELET_DEFAULT_PORT
 	}
@@ -95,20 +105,22 @@ func initConfig(){
 		ServerIpAddressFlag = "127.0.0.1"
 	}
 
-	if NamespaceFlag == "" {
-		NamespaceFlag = "default"
-	}
-
-	if KubeConfigFlag != "" {
-		api.InitGlobalClientFromFile(KubeConfigFlag)
-	} else {
-		api.InitHttpClient()
-	}
-
 	ProtocolScheme = "https"
 	if HttpFlag {
 		ProtocolScheme = "http"
 	}
 
+	if NamespaceFlag == "" {
+		NamespaceFlag = "default"
+	}
+
 	ServerFullAddressGlobal = fmt.Sprintf("%s://%s:%s", ProtocolScheme, ServerIpAddressFlag, PortFlag)
+
+	if KubeConfigFlag != "" {
+		api.InitGlobalClientFromFile(KubeConfigFlag)
+	} else if caFlag != "" && certFlag != "" && keyFlag != "" {
+		api.InitGlobalClientFromCertificatesFiles(ServerFullAddressGlobal, caFlag, certFlag, keyFlag)
+	} else {
+		api.InitHttpClient()
+	}
 }

@@ -49,6 +49,7 @@ var summaryCmd = &cobra.Command{
 }
 
 var onlyCpuAndMemoryFlag bool
+
 func init() {
 	statsCmd.AddCommand(summaryCmd)
 	// TODO: maybe instead of using the flag, let the use of arguments and it will be scalability

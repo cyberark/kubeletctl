@@ -31,7 +31,7 @@ func printLogo() {
 |_| \_)____/|____/|_____)\_)_____)  \__)____)  \__)\_)
 
 Author: Eviatar Gerzi
-Version: 1.2
+Version: 1.5
 `
 	fmt.Println(logo)
 }
@@ -40,7 +40,7 @@ Version: 1.2
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version of the kubeletctl",
-	Long: `Print the version of the kubeletctl`,
+	Long:  `Print the version of the kubeletctl`,
 	Run: func(cmd2 *cobra.Command, args []string) {
 		//fmt.Println("version called")
 		printLogo()

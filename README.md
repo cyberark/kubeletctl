@@ -1,5 +1,6 @@
 [![GitHub release][release-img]][release]
 [![License][license-img]][license]
+[![Go version][shield-go-version]][go-version]
 
 ## Overview
 Kubeletctl is a command line tool that implement kubelet's API.  
@@ -21,12 +22,12 @@ On the [releases](https://github.com/cyberark/kubeletctl/releases) page you will
 For the following examples, we will use the kubeletctl_linux_amd64 binary link. If you plan to use other link, change it accordingly.   
 ### wget
 ```
-wget https://github.com/cyberark/kubeletctl/releases/download/v1.2/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
+wget https://github.com/cyberark/kubeletctl/releases/download/v1.5/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
 ```  
 
 ### curl
 ```
-curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.2/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl 
+curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.5/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl 
 ```
 
 ## Usage
@@ -80,9 +81,20 @@ To view the details on each command or subcommand use the `-h`\\`--help` switch.
 
 
 ## Build  
+Prerequisite:  
+-  [go](https://golang.org/doc/install)  
+-  [gox](https://github.com/mitchellh/gox)  
+
 To build the project run:  
 ```
-go build -ldflags "-s -w"
+make 
+```
+
+This will create `build/kubeletctl_{{.OS}}_{{.Arch}}` binaries.  
+
+For Windows users it is possible to use `gox` directly:  
+```
+gox -ldflags "-s -w" -osarch linux/amd64 -osarch linux/386 -osarch windows/amd64 -osarch windows/386 -osarch="darwin/amd64"
 ```
 
 ## Build with Dockerfile locally
@@ -116,3 +128,5 @@ You can find more projects developed by us in https://github.com/cyberark/.
 [license-img]: https://img.shields.io/github/license/cyberark/kubeletctl.svg
 [license]: https://github.com/cyberark/kubeletctl/blob/master/LICENSE
 
+[shield-go-version]: https://img.shields.io/github/go-mod/go-version/cyberark/kubeletctl
+[go-version]: https://github.com/cyberark/kubeletctl/blob/master/go.mod

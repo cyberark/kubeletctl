@@ -24,6 +24,13 @@ func isJSONString(s string) bool {
 	return json.Unmarshal([]byte(s), &js) == nil
 }
 
+func CheckForEmptyArgsAndExit(args []string, message string){
+	if len(args) == 0 {
+		fmt.Println(message)
+		os.Exit(1)
+	}
+}
+
 func PrintPods(podList v1.PodList) {
 	tw := table.NewWriter()
 	tw.AppendHeader(table.Row{"Pod", "Namespace", "Containers"})
@@ -50,20 +57,20 @@ func PrintPrettyHttpResponse(resp *http.Response, err error) {
 		fmt.Printf("[*] Failed to run HTTP request with error: %s\n", err)
 		os.Exit(1)
 	}
-	
+
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	bodyString := string(bodyBytes)
-	
+
 	if resp.StatusCode == http.StatusOK {
 
 		// TODO: consider changing it by checking the first and the last byte "{..}".
 		// Notice that there is line feed (byte 10 in decimal) that need to consider
 		// if isJSON(jsonStringData){
-		if  isJSON(bodyString) {
+		if isJSON(bodyString) {
 			jsonByteData := pretty.Pretty(bodyBytes)
 			fmt.Println(string(jsonByteData))
 		} else {
@@ -75,5 +82,3 @@ func PrintPrettyHttpResponse(resp *http.Response, err error) {
 		fmt.Printf("[*] Message: %s\n", bodyString)
 	}
 }
-
-
