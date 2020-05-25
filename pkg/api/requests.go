@@ -41,12 +41,14 @@ func InitHttpClient() {
 	)
 	config, err := kubeConfig.ClientConfig()
 	if err != nil && len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
+		fmt.Print("[*] There is a problem with the file in KUBECONFIG environment variable")
 		panic(err.Error())
 	}
 
 	var tr *http.Transport
 
 	if config != nil {
+		fmt.Print("[*] Using KUBECONFIG environment variable")
 		tr = getHttpTransportWithCertificates(config, insecure)
 	} else {
 		tr = &http.Transport{
