@@ -9,7 +9,7 @@ This tool covers all the documented and undocumented APIs.
 The full list of all kubelet's API can be view through the tool or this [API table](https://github.com/cyberark/kubeletctl/blob/master/API_TABLE.md).  
 
 ## What can it do ?
-- Run any kubelet API call 
+- Run any kubelet API call
 - Scan for nodes with opened kubelet API
 - Scan for containers with RCE
 - Run a command on all the available containers by kubelet at the same time
@@ -27,7 +27,7 @@ wget https://github.com/cyberark/kubeletctl/releases/download/v1.5/kubeletctl_li
 
 ### curl
 ```
-curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.5/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl 
+curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.5/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
 ```
 
 ## Usage
@@ -87,7 +87,7 @@ Prerequisite:
 
 To build the project run:  
 ```
-make 
+make
 ```
 
 This will create `build/kubeletctl_{{.OS}}_{{.Arch}}` binaries.  
@@ -98,14 +98,26 @@ gox -ldflags "-s -w" -osarch linux/amd64 -osarch linux/386 -osarch windows/amd64
 ```
 
 ## Build with Dockerfile locally
-You can use the attached docker file to build a local image by running:  
+You can use the attached release Dockerfile to build a local image by running:  
 ```
-docker build -t kubeletctl -f Dockerfile .
+make docker-release
 ```
 
 Then run:  
 ```
-docker run -it --rm kubeletctl
+docker run -it --rm kubeletctl:release
+```
+
+This will fetch and unpack the latest release binary into the Dockerfile.
+
+If you wish to build from source run:
+```
+make docker
+```
+
+Then run:  
+```
+docker run -it --rm kubeletctl:latest
 ```
 
 ## Contributing
