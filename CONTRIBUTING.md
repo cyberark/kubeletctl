@@ -1,7 +1,6 @@
 # Contributing
 
-[Are you accepting contributions at this time? If not, please state that here.
-No need to include content from the rest of this document.]
+We are accepting contributions.
 
 For general contribution and community guidelines, please see the [community repo](https://github.com/cyberark/community).
 
@@ -14,15 +13,15 @@ For general contribution and community guidelines, please see the [community rep
 
 ## Development
 
-[What development tools are required to start working on this project?]
+We recommend to use Go version +1.3 and Goland IDE for development.
 
 ## Testing
 
-[Instructions for running the test suite]
+We are currently don't have tests, once it will be ready, it will be updated.
 
 ## Releases
 
-[Instructions for creating a new release]
+Release will be build and checked by the owner of the repostiroy.
 
 ## Contributing workflow
 
