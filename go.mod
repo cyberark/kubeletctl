@@ -16,6 +16,5 @@ require (
 	github.com/spf13/cobra v0.0.7
 	github.com/tidwall/pretty v1.0.1
 	k8s.io/api v0.0.0-20200403220253-fa879b399cd0
-	k8s.io/apimachinery v0.0.0-20200403220105-fa0d5bf06730 // indirect
 	k8s.io/client-go v0.0.0-20200404181738-fe32aa3b9449
 )
