@@ -4,7 +4,7 @@ RUN mkdir /src
 ADD . /src
 WORKDIR /src
 RUN go get github.com/mitchellh/gox
-RUN gox -ldflags "-s -w" -osarch linux/amd64 -output "kubeletctl"
+RUN gox -ldflags "-s -w" -osarch linux/386 -output "kubeletctl"
 
 FROM alpine:latest
 COPY --from=builder /src/kubeletctl /app/
