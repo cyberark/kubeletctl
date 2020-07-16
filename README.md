@@ -2,6 +2,8 @@
 [![License][license-img]][license]
 [![Go version][shield-go-version]][go-version]
 
+<img src="https://github.com/cyberark/kubeletctl/blob/assets/kubeletctl_2x_transparent.png" width="260">  
+
 ## Overview
 Kubeletctl is a command line tool that implement kubelet's API.  
 Part of kubelet's API is documented but most of it is not.  
