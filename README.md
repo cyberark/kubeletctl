@@ -7,8 +7,10 @@
 ## Overview
 Kubeletctl is a command line tool that implement kubelet's API.  
 Part of kubelet's API is documented but most of it is not.  
-This tool covers all the documented and undocumented APIs.
+This tool covers all the documented and undocumented APIs.  
 The full list of all kubelet's API can be view through the tool or this [API table](https://github.com/cyberark/kubeletctl/blob/master/API_TABLE.md).  
+A related blog post:  
+https://www.cyberark.com/resources/threat-research-blog/using-kubelet-client-to-attack-the-kubernetes-cluster
 
 ## What can it do ?
 - Run any kubelet API call
