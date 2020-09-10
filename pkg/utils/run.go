@@ -113,35 +113,32 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 
 	// start listening for any results over the resultsChan
 	// once we get a Result append it to the Result slice
-	var count int
 	podNumber := 1
 	spacesString := "   "
 	for {
 		result := <-resultsChan
 
 		// If we have more than 1 digit, we need to add more spaces to straight the lines
-		if count > 9 {
+		if podNumber > 9 {
 			spacesString = "    "
-		} else if count > 99 {
+		} else if podNumber > 99 {
 			spacesString = "     "
 		}
 
-		if result.StatusCode == http.StatusOK {
-			var sb strings.Builder
-			sb.WriteString(fmt.Sprintf("%d. Pod: %s\n", podNumber, result.PodInfo.PodName))
-			sb.WriteString(fmt.Sprintf("%sNamespace: %s\n", spacesString, result.PodInfo.Namespace))
-			sb.WriteString(fmt.Sprintf("%sContainer: %s\n", spacesString, result.PodInfo.ContainerName))
-			sb.WriteString(fmt.Sprintf("%sUrl: %s\n", spacesString, result.PodInfo.Url))
-			sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", spacesString, result.Output))
-			fmt.Println(sb.String())
-
-			podNumber += 1
-		}
+		var sb strings.Builder
+		sb.WriteString(fmt.Sprintf("%d. Pod: %s\n", podNumber, result.PodInfo.PodName))
+		sb.WriteString(fmt.Sprintf("%sNamespace: %s\n", spacesString, result.PodInfo.Namespace))
+		sb.WriteString(fmt.Sprintf("%sContainer: %s\n", spacesString, result.PodInfo.ContainerName))
+		sb.WriteString(fmt.Sprintf("%sUrl: %s\n", spacesString, result.PodInfo.Url))
+		sb.WriteString(fmt.Sprintf("%sOutput: \n%s\n\n", spacesString, result.Output))
+		fmt.Println(sb.String())
 
 		// if we've reached the expected amount of runPodsInfo then stop
-		if count == len(runPodsInfo) {
+		if podNumber == len(runPodsInfo) {
 			break
 		}
+	
+	        podNumber += 1
 	}
 
 	// now we're done we return the results
