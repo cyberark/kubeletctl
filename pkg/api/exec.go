@@ -67,4 +67,8 @@ func Exec(serverIp string, serverPort string, serverFullAddress string, apiPath 
 		Stderr: os.Stderr,
 		Tty:    true,
 	})
+	
+	if err != nil {
+	    fmt.Println(err)
+	}
 }
