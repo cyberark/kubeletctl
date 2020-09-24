@@ -11,19 +11,20 @@ import (
 )
 
 var (
-	PortFlag                string
-	NamespaceFlag           string
-	ContainerFlag           string
-	PodFlag                 string
-	ServerIpAddressFlag     string
-	ServerFullAddressGlobal string
-	PodUidFlag              string
-	KubeConfigFlag          string
-	ProtocolScheme          string
-	caFlag                  string
-	certFlag                string
-	keyFlag                 string
-	HttpFlag                bool
+	PortFlag                    string
+	NamespaceFlag               string
+	ContainerFlag               string
+	PodFlag                     string
+	ServerIpAddressFlag         string
+	ServerFullAddressGlobal     string
+	PodUidFlag                  string
+	KubeConfigFlag              string
+	ProtocolScheme              string
+	caFlag                      string
+	certFlag                    string
+	keyFlag                     string
+	HttpFlag                    bool
+	IgnoreDefaultKubeConfigFlag bool
 	//BodyContentFlag         string
 	RawFlag bool
 )
@@ -61,6 +62,7 @@ var RootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Do Stuff Here
 		printLogo()
+		cmd.Help()
 	},
 }
 
@@ -86,6 +88,7 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&KubeConfigFlag, "config", "k", "", "KubeConfig file")
 	RootCmd.PersistentFlags().BoolVarP(&RawFlag, "raw", "r", false, "Prints raw data")
 	RootCmd.PersistentFlags().BoolVarP(&HttpFlag, "http", "", false, "Use HTTP (default is HTTPS)")
+	RootCmd.PersistentFlags().BoolVarP(&IgnoreDefaultKubeConfigFlag, "ignoreconfig", "i", false, "Ignore the default KUBECONFIG environment variable or location ~/.kube")
 	//RootCmd.PersistentFlags().StringVarP(&BodyContentFlag, "body", "b", "", "This is the body message. Should be used in POST or PUT requests.")
 
 	RootCmd.PersistentFlags().StringVarP(&caFlag, "cacert", "", "", "CA certificate (example: /etc/kubernetes/pki/ca.crt )")
@@ -125,14 +128,16 @@ func initConfig() {
 			},
 		}
 	} else {
-		kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-			clientcmd.NewDefaultClientConfigLoadingRules(),
-			&clientcmd.ConfigOverrides{},
-		)
-		config, err = kubeConfig.ClientConfig()
-		if err != nil && len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
-			fmt.Fprintln(os.Stderr, "[*] There is a problem with the file in KUBECONFIG environment variable")
-			panic(err.Error())
+		if !IgnoreDefaultKubeConfigFlag {
+			kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+				clientcmd.NewDefaultClientConfigLoadingRules(),
+				&clientcmd.ConfigOverrides{},
+			)
+			config, err = kubeConfig.ClientConfig()
+			if err != nil && len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
+				fmt.Fprintln(os.Stderr, "[*] There is a problem with the file in KUBECONFIG environment variable\n[*] You can ignore it by modifying the KUBECONFIG environment variable, file \"~/.kube/config\" or use the \"-i\" switch")
+				panic(err.Error())
+			}
 		}
 	}
 
