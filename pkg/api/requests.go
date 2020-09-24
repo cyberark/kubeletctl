@@ -38,7 +38,7 @@ func InitHttpClient(config *restclient.Config) {
 	var tr *http.Transport
 
 	if config != nil {
-		fmt.Fprintln(os.Stderr, "[*] Using KUBECONFIG environment variable")
+		fmt.Fprintln(os.Stderr, "[*] Using KUBECONFIG environment variable\n[*] You can ignore it by modifying the KUBECONFIG environment variable, file \"~/.kube/config\" or use the \"-i\" switch")
 		tr = getHttpTransportWithCertificates(config, insecure)
 	} else {
 		tr = &http.Transport{
