@@ -6,7 +6,6 @@ import (
 	"crypto/x509"
 	"io/ioutil"
 	restclient "k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"net/http"
 	"os"
@@ -33,23 +32,13 @@ const (
 	DELETE HTTPVerb = "DELETE"
 )
 
-func InitHttpClient() {
+func InitHttpClient(config *restclient.Config) {
 
 	insecure := true
-	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-		clientcmd.NewDefaultClientConfigLoadingRules(),
-		&clientcmd.ConfigOverrides{},
-	)
-	config, err := kubeConfig.ClientConfig()
-	if err != nil && len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
-		fmt.Println("[*] There is a problem with the file in KUBECONFIG environment variable")
-		panic(err.Error())
-	}
-
 	var tr *http.Transport
 
 	if config != nil {
-		fmt.Println("[*] Using KUBECONFIG environment variable")
+		fmt.Fprintln(os.Stderr, "[*] Using KUBECONFIG environment variable")
 		tr = getHttpTransportWithCertificates(config, insecure)
 	} else {
 		tr = &http.Transport{
@@ -106,44 +95,6 @@ func getHttpTransportWithCertificates(config *restclient.Config, insecure bool) 
 	}
 
 	return tr
-}
-
-func InitGlobalClientFromFile(kubeconfig string) {
-	// use the current context in kubeconfig
-	config, err := clientcmd.BuildConfigFromFlags("", kubeconfig)
-
-	if err != nil {
-		panic(err.Error())
-	}
-
-	insecure := true
-	tr := getHttpTransportWithCertificates(config, insecure)
-	GlobalClient = &http.Client{
-		Transport: tr,
-		Timeout:   time.Second * 20,
-	}
-
-}
-
-func InitGlobalClientFromCertificatesFiles(serverAddress string, caFile string, certFile string, keyFile string) {
-
-	config := restclient.Config{
-		Host: serverAddress,
-
-		TLSClientConfig: restclient.TLSClientConfig{
-			Insecure: false,
-			CertFile: certFile,
-			KeyFile:  keyFile,
-			CAFile:   caFile,
-		},
-	}
-
-	insecure := true
-	tr := getHttpTransportWithCertificates(&config, insecure)
-	GlobalClient = &http.Client{
-		Transport: tr,
-		Timeout:   time.Second * 20,
-	}
 }
 
 func GetRequest(client *http.Client, url string) (*http.Response, error) {

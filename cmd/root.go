@@ -3,7 +3,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"k8s.io/client-go/tools/clientcmd"
 	"kubeletctl/pkg/api"
+	"net/url"
+	restclient "k8s.io/client-go/rest"
 	"os"
 )
 
@@ -97,12 +100,57 @@ func init() {
 const KUBELET_DEFAULT_PORT = "10250"
 
 func initConfig() {
-	if PortFlag == "" {
-		PortFlag = KUBELET_DEFAULT_PORT
+
+	if NamespaceFlag == "" {
+		NamespaceFlag = "default"
 	}
 
-	if ServerIpAddressFlag == "" {
-		ServerIpAddressFlag = "127.0.0.1"
+	var config *restclient.Config
+	var err error
+
+	if KubeConfigFlag != "" {
+		config, err = clientcmd.BuildConfigFromFlags("", KubeConfigFlag)
+		if err != nil {
+			panic(err.Error())
+		}
+	} else if caFlag != "" && certFlag != "" && keyFlag != "" {
+		config = &restclient.Config{
+			Host: "",
+
+			TLSClientConfig: restclient.TLSClientConfig{
+				Insecure: false,
+				CertFile: certFlag,
+				KeyFile:  keyFlag,
+				CAFile:   caFlag,
+			},
+		}
+	} else {
+		kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+			clientcmd.NewDefaultClientConfigLoadingRules(),
+			&clientcmd.ConfigOverrides{},
+		)
+		config, err = kubeConfig.ClientConfig()
+		if err != nil && len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
+			fmt.Fprintln(os.Stderr, "[*] There is a problem with the file in KUBECONFIG environment variable")
+			panic(err.Error())
+		}
+	}
+
+	if config != nil && config.Host != "" {
+		hostUrl, err := url.Parse(config.Host)
+		if err != nil {
+			panic(err.Error())
+		}
+		if PortFlag == "" {
+			PortFlag = hostUrl.Port()
+		}
+		if ServerIpAddressFlag == "" {
+			ServerIpAddressFlag = hostUrl.Hostname()
+		}
+	}
+
+	if PortFlag == "" {
+		PortFlag = KUBELET_DEFAULT_PORT
 	}
 
 	ProtocolScheme = "https"
@@ -110,17 +158,14 @@ func initConfig() {
 		ProtocolScheme = "http"
 	}
 
-	if NamespaceFlag == "" {
-		NamespaceFlag = "default"
+	if ServerIpAddressFlag == "" {
+		ServerIpAddressFlag = "127.0.0.1"
 	}
 
 	ServerFullAddressGlobal = fmt.Sprintf("%s://%s:%s", ProtocolScheme, ServerIpAddressFlag, PortFlag)
-
-	if KubeConfigFlag != "" {
-		api.InitGlobalClientFromFile(KubeConfigFlag)
-	} else if caFlag != "" && certFlag != "" && keyFlag != "" {
-		api.InitGlobalClientFromCertificatesFiles(ServerFullAddressGlobal, caFlag, certFlag, keyFlag)
-	} else {
-		api.InitHttpClient()
+	if config != nil {
+		config.Host = ServerFullAddressGlobal
 	}
+
+	api.InitHttpClient(config)
 }
