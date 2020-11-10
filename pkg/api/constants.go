@@ -8,7 +8,7 @@ const (
 	PORT_FORWARD     string = "/portForward"
 	CONTAINER_LOGS   string = "/containerLogs"
 	RUNNING_PODS     string = "/runningpods"
-	LOGS             string = "/pods"
+	LOGS             string = "/logs"
 	METRICS          string = "/metrics"
 	METRICS_CADVISOR string = "/metrics/cadvisor"
 	METRICS_PROBES   string = "/metrics/probes"
