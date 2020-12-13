@@ -136,7 +136,7 @@ For instructions on how to get started and descriptions
 of our development workflows, please see our [contributing guide](https://github.com/cyberark/conjur-api-go/blob/master/CONTRIBUTING.md).
 
 ## License
-
+Copyright (c) 2020 CyberArk Software Ltd. All rights reserved  
 This repository is licensed under Apache License 2.0 - see [`LICENSE`](LICENSE) for more details.
 
 ## Share Your Thoughts And Feedback
