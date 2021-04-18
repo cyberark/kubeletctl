@@ -26,12 +26,12 @@ On the [releases](https://github.com/cyberark/kubeletctl/releases) page you will
 For the following examples, we will use the kubeletctl_linux_amd64 binary link. If you plan to use other link, change it accordingly.   
 ### wget
 ```
-wget https://github.com/cyberark/kubeletctl/releases/download/v1.5/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
+wget https://github.com/cyberark/kubeletctl/releases/download/v1.6/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
 ```  
 
 ### curl
 ```
-curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.5/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
+curl -LO https://github.com/cyberark/kubeletctl/releases/download/v1.6/kubeletctl_linux_amd64 && chmod a+x ./kubeletctl_linux_amd64 && mv ./kubeletctl_linux_amd64 /usr/local/bin/kubeletctl
 ```
 
 ## Usage
@@ -62,11 +62,15 @@ Available Commands:
   version       Print the version of the kubeletctl
 
 Flags:
+      --cacert string      CA certificate (example: /etc/kubernetes/pki/ca.crt )
+      --cert string        Private key (example: /var/lib/kubelet/pki/kubelet-client-current.pem)
       --cidr string        A network of IP addresses (Example: x.x.x.x/24)
   -k, --config string      KubeConfig file
   -c, --container string   Container name
   -h, --help               help for kubeletctl
       --http               Use HTTP (default is HTTPS)
+  -i, --ignoreconfig       Ignore the default KUBECONFIG environment variable or location ~/.kube
+      --key string         Digital certificate (example: /var/lib/kubelet/pki/kubelet-client-current.pem)
   -n, --namespace string   pod namespace
   -p, --pod string         Pod name
       --port string        Kubelet's port, default is 10250
@@ -75,6 +79,7 @@ Flags:
   -u, --uid string         Pod UID
 
 Use "kubeletctl [command] --help" for more information about a command.
+
 ```
 
 To view the details on each command or subcommand use the `-h`\\`--help` switch.
@@ -131,7 +136,7 @@ For instructions on how to get started and descriptions
 of our development workflows, please see our [contributing guide](https://github.com/cyberark/conjur-api-go/blob/master/CONTRIBUTING.md).
 
 ## License
-
+Copyright (c) 2020 CyberArk Software Ltd. All rights reserved  
 This repository is licensed under Apache License 2.0 - see [`LICENSE`](LICENSE) for more details.
 
 ## Share Your Thoughts And Feedback
