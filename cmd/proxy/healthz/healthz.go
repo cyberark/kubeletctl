@@ -49,11 +49,11 @@ var healthzCmd = &cobra.Command{
 
 		inputArgs := ""
 		if utils.IsNotArgsEmpty(args) {
-			inputArgs = args[0]
+			inputArgs = "/" + args[0]
 		}
 
 		// We didn't define the commands as cobra's commands, the user can type any commands for scalability.
-		apiPathUrl := cmd.ServerFullAddressGlobal + api.HEALTHZ + "/" + inputArgs
+		apiPathUrl := cmd.ServerFullAddressGlobal + api.HEALTHZ + inputArgs
 		resp, err := api.GetRequest(api.GlobalClient, apiPathUrl)
 		cmd.PrintPrettyHttpResponse(resp, err)
 	},
