@@ -3,8 +3,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"io/ioutil"
 	"k8s.io/client-go/tools/clientcmd"
 	"kubeletctl/pkg/api"
+	"log"
 	"net/url"
 	restclient "k8s.io/client-go/rest"
 	"os"
@@ -23,6 +25,8 @@ var (
 	caFlag                      string
 	certFlag                    string
 	keyFlag                     string
+	tokenFlag                   string
+	tokenFileFlag               string
 	HttpFlag                    bool
 	IgnoreDefaultKubeConfigFlag bool
 	//BodyContentFlag         string
@@ -91,6 +95,8 @@ func init() {
 	RootCmd.PersistentFlags().BoolVarP(&IgnoreDefaultKubeConfigFlag, "ignoreconfig", "i", false, "Ignore the default KUBECONFIG environment variable or location ~/.kube")
 	//RootCmd.PersistentFlags().StringVarP(&BodyContentFlag, "body", "b", "", "This is the body message. Should be used in POST or PUT requests.")
 
+	RootCmd.PersistentFlags().StringVarP(&tokenFileFlag, "token-file", "f", "", "Service account Token (JWT) file path")
+	RootCmd.PersistentFlags().StringVarP(&tokenFlag, "token", "t", "", "Service account Token (JWT) to insert")
 	RootCmd.PersistentFlags().StringVarP(&caFlag, "cacert", "", "", "CA certificate (example: /etc/kubernetes/pki/ca.crt )")
 	RootCmd.PersistentFlags().StringVarP(&certFlag, "cert", "", "", "Private key (example: /var/lib/kubelet/pki/kubelet-client-current.pem)")
 	RootCmd.PersistentFlags().StringVarP(&keyFlag, "key", "", "", "Digital certificate (example: /var/lib/kubelet/pki/kubelet-client-current.pem)")
@@ -98,6 +104,16 @@ func init() {
 	pf := RootCmd.PersistentFlags()
 	pf.StringVarP(&ServerIpAddressFlag, "server", "s", "", "Server address (format: x.x.x.x. For Example: 123.123.123.123)")
 	//cobra.MarkFlagRequired(pf, "server")
+}
+
+func readTokenFromFile(filePath string) string {
+	data, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		fmt.Print("[*] Failed to read file")
+		log.Fatal(err)
+	}
+
+	return string(data)
 }
 
 const KUBELET_DEFAULT_PORT = "10250"
@@ -126,6 +142,14 @@ func initConfig() {
 				KeyFile:  keyFlag,
 				CAFile:   caFlag,
 			},
+		}
+	} else if tokenFlag != "" {
+		config = &restclient.Config{
+			BearerToken: tokenFlag,
+		}
+	} else if tokenFileFlag != "" {
+		config = &restclient.Config{
+			BearerToken: readTokenFromFile(tokenFileFlag),
 		}
 	} else {
 		if !IgnoreDefaultKubeConfigFlag {
