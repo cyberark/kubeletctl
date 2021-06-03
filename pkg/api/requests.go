@@ -4,17 +4,17 @@ import (
 	"bytes"
 	"crypto/tls"
 	"crypto/x509"
+	"fmt"
 	"io/ioutil"
 	restclient "k8s.io/client-go/rest"
 	"log"
 	"net/http"
 	"os"
 	"time"
-	"fmt"
 )
 
 var GlobalClient *http.Client
-
+var GlobalBearerToken string
 // a struct to hold the result from each request including an index
 // which will be used for sorting the results after they come in
 type Result struct {
@@ -30,6 +30,7 @@ const (
 	GET    HTTPVerb = "GET"
 	POST   HTTPVerb = "POST"
 	DELETE HTTPVerb = "DELETE"
+	PUT    HTTPVerb = "PUT"
 )
 
 func InitHttpClient(config *restclient.Config) {
@@ -37,7 +38,12 @@ func InitHttpClient(config *restclient.Config) {
 	insecure := true
 	var tr *http.Transport
 
-	if config != nil {
+	if  config != nil && config.BearerToken != "" {
+		GlobalBearerToken = config.BearerToken
+	}
+
+	// No need to check config.BearerTokenFile because it already being checked in root.go
+    if config != nil && config.BearerToken == ""  {
 		fmt.Fprintln(os.Stderr, "[*] Using KUBECONFIG environment variable\n[*] You can ignore it by modifying the KUBECONFIG environment variable, file \"~/.kube/config\" or use the \"-i\" switch")
 		tr = getHttpTransportWithCertificates(config, insecure)
 	} else {
@@ -54,6 +60,7 @@ func InitHttpClient(config *restclient.Config) {
 		Timeout:   time.Second * 20,
 	}
 }
+
 
 func getHttpTransportWithCertificates(config *restclient.Config, insecure bool) *http.Transport {
 	var cert tls.Certificate
@@ -97,32 +104,36 @@ func getHttpTransportWithCertificates(config *restclient.Config, insecure bool) 
 	return tr
 }
 
-func GetRequest(client *http.Client, url string) (*http.Response, error) {
-	req, _ := http.NewRequest("GET", url, nil)
+func DoGenericRequest(req *http.Request, client *http.Client) (*http.Response, error){
+	if GlobalBearerToken != "" {
+		req.Header.Set("Authorization", "Bearer " + GlobalBearerToken)
+	}
 
-	//req.Header.Set("Authorization", "Bearer " + BEARER_TOKEN)
 	resp, err := (*client).Do(req)
 
 	return resp, err
+}
+
+func GetRequest(client *http.Client, url string) (*http.Response, error) {
+	req, _ := http.NewRequest("GET", url, nil)
+
+	return DoGenericRequest(req, client)
 }
 
 func PutRequest(client *http.Client, url string, bodyData []byte) (*http.Response, error) {
 	req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(bodyData))
 
 	req.Header.Set("Content-Type", "text/plain")
-	resp, err := (*client).Do(req)
-
-	return resp, err
+	return DoGenericRequest(req, client)
 }
 
 func PostRequest(client *http.Client, url string, bodyData []byte) (*http.Response, error) {
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(bodyData))
 	//req.Header.Set("Authorization", "Bearer " + BEARER_TOKEN)
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	resp, err := (*client).Do(req)
-
-	return resp, err
+	return DoGenericRequest(req, client)
 }
+
 
 /*
 func PostRequest2(client *http.Client, url string, bodyData []byte) (*http.Response, error){
