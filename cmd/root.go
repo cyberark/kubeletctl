@@ -48,6 +48,12 @@ var RootCmd = &cobra.Command{
     // List all pods from kubelet
     kubeletctl pods --server 123.123.123.123 
 
+    // List all pods from kubelet with token
+    kubeletctl pods --token <JWT_token> --server 123.123.123.123 
+    
+    // List all pods from kubelet with token file
+    kubeletctl pods --token-file /var/run/secrets/kubernetes.io/serviceaccount/token --server 123.123.123.123 
+    
     // Searching for service account token in each accessible container
     kubeletctl scan token --server 123.123.123.123 
 
