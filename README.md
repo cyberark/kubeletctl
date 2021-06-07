@@ -1,6 +1,7 @@
 [![GitHub release][release-img]][release]
 [![License][license-img]][license]
 [![Go version][shield-go-version]][go-version]
+![Downloads][download]
 
 <img src="https://github.com/cyberark/kubeletctl/blob/assets/kubeletctl_2x_transparent.png" width="260">  
 
@@ -151,3 +152,5 @@ You can find more projects developed by us in https://github.com/cyberark/.
 
 [shield-go-version]: https://img.shields.io/github/go-mod/go-version/cyberark/kubeletctl
 [go-version]: https://github.com/cyberark/kubeletctl/blob/master/go.mod
+
+[download]: https://img.shields.io/github/downloads/cyberark/kubeletctl/total?logo=github
