@@ -16,6 +16,7 @@ limitations under the License.
 package proxy
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
@@ -58,7 +59,7 @@ var podsCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-
+			resp.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 			var pods v1.PodList
 			err = json.Unmarshal(bodyBytes, &pods)
 
