@@ -24,7 +24,7 @@ func isJSONString(s string) bool {
 	return json.Unmarshal([]byte(s), &js) == nil
 }
 
-func CheckForEmptyArgsAndExit(args []string, message string){
+func CheckForEmptyArgsAndExit(args []string, message string) {
 	if len(args) == 0 {
 		fmt.Println(message)
 		os.Exit(1)
@@ -53,18 +53,12 @@ func PrintPods(podList v1.PodList) {
 }
 
 func PrintPrettyHttpResponse(resp *http.Response, err error) {
-	if err != nil {
-		fmt.Printf("[*] Failed to run HTTP request with error: %s\n", err)
-		os.Exit(1)
-	}
-
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	bodyString := string(bodyBytes)
-
 	if resp.StatusCode == http.StatusOK {
 
 		// TODO: consider changing it by checking the first and the last byte "{..}".
