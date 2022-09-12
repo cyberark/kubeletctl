@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"io/ioutil"
+	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"kubeletctl/pkg/api"
 	"log"
 	"net/url"
-	restclient "k8s.io/client-go/rest"
 	"os"
 )
 
@@ -164,7 +164,8 @@ func initConfig() {
 				&clientcmd.ConfigOverrides{},
 			)
 			config, err = kubeConfig.ClientConfig()
-			if err != nil && len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
+			// TODO: should fail when YAML is wrong, like with ":"
+			if err != nil { //&& len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
 				fmt.Fprintln(os.Stderr, "[*] There is a problem with the file in KUBECONFIG environment variable\n[*] You can ignore it by modifying the KUBECONFIG environment variable, file \"~/.kube/config\" or use the \"-i\" switch")
 				panic(err.Error())
 			}
@@ -175,9 +176,6 @@ func initConfig() {
 		hostUrl, err := url.Parse(config.Host)
 		if err != nil {
 			panic(err.Error())
-		}
-		if PortFlag == "" {
-			PortFlag = hostUrl.Port()
 		}
 		if ServerIpAddressFlag == "" {
 			ServerIpAddressFlag = hostUrl.Hostname()
