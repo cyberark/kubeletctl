@@ -165,7 +165,7 @@ func initConfig() {
 			)
 			config, err = kubeConfig.ClientConfig()
 			// TODO: should fail when YAML is wrong, like with ":"
-			if err != nil { //&& len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
+			if err != nil && len(os.Getenv(clientcmd.RecommendedConfigPathEnvVar)) > 0 {
 				fmt.Fprintln(os.Stderr, "[*] There is a problem with the file in KUBECONFIG environment variable\n[*] You can ignore it by modifying the KUBECONFIG environment variable, file \"~/.kube/config\" or use the \"-i\" switch")
 				panic(err.Error())
 			}
