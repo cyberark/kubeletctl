@@ -41,13 +41,13 @@ var metricsCmd = &cobra.Command{
     kubeletctl metrics
     kubeletctl metrics cadvisor
     kubeletctl metrics probes
-    kubeletctl metrics resource v1alpha1
+    kubeletctl metrics resource v1alpha1 (DEPRECATED from k8s > 1.18)
   
   With curl:
     curl -k https://<node_ip>:10250/metrics
     curl -k https://<node_ip>:10250/metrics/cadvisor
     curl -k https://<node_ip>:10250/probes
-    curl -k https://<node_ip>:10250/metrics/resource/v1alpha1`,
+    curl -k https://<node_ip>:10250/metrics/resource/v1alpha1 (DEPRECATED from k8s > 1.18)`,
 
 	Run: func(cmd2 *cobra.Command, args []string) {
 		//fmt.Println("metrics called")
