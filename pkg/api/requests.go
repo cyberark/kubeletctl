@@ -56,7 +56,7 @@ func InitHttpClient(config *restclient.Config) {
 
 	// No need to check config.BearerTokenFile because it already being checked in root.go
 	if config != nil && config.BearerToken == "" {
-		if config.ExecProvider.Command != "" {
+		if config.ExecProvider != nil && config.ExecProvider.Command != "" {
 			fmt.Println("[*] Using kubeconfig user exec commands.")
 			res, err := exec.Command(config.ExecProvider.Command, config.ExecProvider.Args[0:]...).Output()
 			if err != nil {
