@@ -4,17 +4,20 @@ import (
 	"bytes"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	restclient "k8s.io/client-go/rest"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"time"
 )
 
 var GlobalClient *http.Client
 var GlobalBearerToken string
+
 // a struct to hold the result from each request including an index
 // which will be used for sorting the results after they come in
 type Result struct {
@@ -22,6 +25,15 @@ type Result struct {
 	res      http.Response
 	HttpVerb HTTPVerb
 	err      error
+}
+
+type Token struct {
+	Kind       string
+	APIVersion string
+	Status     struct {
+		ExpirationTimestamp string
+		Token               string
+	}
 }
 
 type HTTPVerb string
@@ -38,21 +50,33 @@ func InitHttpClient(config *restclient.Config) {
 	insecure := true
 	var tr *http.Transport
 
-	if  config != nil && config.BearerToken != "" {
+	if config != nil && config.BearerToken != "" {
 		GlobalBearerToken = config.BearerToken
 	}
 
 	// No need to check config.BearerTokenFile because it already being checked in root.go
-    if config != nil && config.BearerToken == ""  {
-		fmt.Fprintln(os.Stderr, "[*] Using KUBECONFIG environment variable\n[*] You can ignore it by modifying the KUBECONFIG environment variable, file \"~/.kube/config\" or use the \"-i\" switch")
-		tr = getHttpTransportWithCertificates(config, insecure)
-	} else {
-		tr = &http.Transport{
-			MaxIdleConns:       10,
-			IdleConnTimeout:    30 * time.Second,
-			DisableCompression: true,
-			TLSClientConfig: &tls.Config{InsecureSkipVerify: insecure},
+	if config != nil && config.BearerToken == "" {
+		if config.ExecProvider.Command != "" {
+			fmt.Println("[*] Using kubeconfig user exec commands.")
+			res, err := exec.Command(config.ExecProvider.Command, config.ExecProvider.Args[0:]...).Output()
+			if err != nil {
+				log.Fatal(err)
+			}
+			var token Token
+			err = json.Unmarshal(res, &token)
+			if err != nil {
+				log.Fatal(err)
+			}
+			config.BearerToken = token.Status.Token
+			GlobalBearerToken = token.Status.Token
+			tr = makeHttpTransport(insecure)
+		} else {
+			fmt.Fprintln(os.Stderr, "[*] Using KUBECONFIG environment variable\n[*] You can ignore it by modifying the KUBECONFIG environment variable, file \"~/.kube/config\" or use the \"-i\" switch")
+			tr = getHttpTransportWithCertificates(config, insecure)
 		}
+
+	} else {
+		tr = makeHttpTransport(insecure)
 	}
 
 	GlobalClient = &http.Client{
@@ -61,6 +85,15 @@ func InitHttpClient(config *restclient.Config) {
 	}
 }
 
+func makeHttpTransport(insecure bool) *http.Transport {
+	tr := &http.Transport{
+		MaxIdleConns:       10,
+		IdleConnTimeout:    30 * time.Second,
+		DisableCompression: true,
+		TLSClientConfig:    &tls.Config{InsecureSkipVerify: insecure},
+	}
+	return tr
+}
 
 func getHttpTransportWithCertificates(config *restclient.Config, insecure bool) *http.Transport {
 	var cert tls.Certificate
@@ -104,9 +137,9 @@ func getHttpTransportWithCertificates(config *restclient.Config, insecure bool) 
 	return tr
 }
 
-func DoGenericRequest(req *http.Request, client *http.Client) (*http.Response, error){
+func DoGenericRequest(req *http.Request, client *http.Client) (*http.Response, error) {
 	if GlobalBearerToken != "" {
-		req.Header.Set("Authorization", "Bearer " + GlobalBearerToken)
+		req.Header.Set("Authorization", "Bearer "+GlobalBearerToken)
 	}
 
 	resp, err := (*client).Do(req)
@@ -133,7 +166,6 @@ func PostRequest(client *http.Client, url string, bodyData []byte) (*http.Respon
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	return DoGenericRequest(req, client)
 }
-
 
 /*
 func PostRequest2(client *http.Client, url string, bodyData []byte) (*http.Response, error){
