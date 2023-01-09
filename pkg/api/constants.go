@@ -23,4 +23,5 @@ const (
 	DEBUG_FLAGS      string = "/debug/flags/v"
 	STD_IN_OUT_TTY   string = "input=1&output=1&tty=1"
 	CRI              string = "/cri/exec"
+	CHECKPOINT       string = "/checkpoint"
 )
