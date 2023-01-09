@@ -31,7 +31,8 @@ func printLogo() {
 |_| \_)____/|____/|_____)\_)_____)  \__)____)  \__)\_)
 
 Author: Eviatar Gerzi
-Version: 1.9
+Version: 1.10  
+GitHub: https://github.com/cyberark/kubesploit
 `
 	fmt.Println(logo)
 }
