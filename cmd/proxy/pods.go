@@ -25,6 +25,7 @@ import (
 	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
 	"log"
+	"net/http/httputil"
 	"os"
 )
 
@@ -46,9 +47,9 @@ var podsCmd = &cobra.Command{
 
 		apiPathUrl := cmd.ServerFullAddressGlobal + api.PODS
 		resp, err := api.GetRequest(api.GlobalClient, apiPathUrl)
-
+		respDump, err := httputil.DumpResponse(resp, true)
 		if cmd.RawFlag {
-			cmd.PrintPrettyHttpResponse(resp, err)
+			fmt.Printf("RESPONSE:\n%s", string(respDump))
 		} else {
 			if err != nil {
 				fmt.Printf("[*] Failed to run HTTP request with error: %s\n", err)
