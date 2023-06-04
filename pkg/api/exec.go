@@ -41,6 +41,10 @@ func Exec(serverIp string, serverPort string, serverFullAddress string, apiPath 
 		},
 		Transport: tr,
 	}
+	// If the Exec needs a token
+	if GlobalBearerToken != "" {
+		config.BearerToken = GlobalBearerToken
+	}
 
 	urlObject := &url.URL{
 		Scheme: "https",
@@ -69,6 +73,6 @@ func Exec(serverIp string, serverPort string, serverFullAddress string, apiPath 
 	})
 	
 	if err != nil {
-	    fmt.Println(err)
+		fmt.Println(err)
 	}
 }
