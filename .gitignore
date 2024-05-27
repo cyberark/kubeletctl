@@ -1,2 +1,4 @@
 vendor
 build
+.vscode/launch.json
+kubeletctl

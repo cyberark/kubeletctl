@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
@@ -40,7 +41,16 @@ func PrintDecodedToken(tokenString string) {
 	for key, val := range *claims {
 		row := make(table.Row, 2)
 		row[0] = key
-		row[1] = val
+		if key == "kubernetes.io" {
+			if nestedMap, ok := val.(map[string]interface{}); ok {
+				valStr := stringifyMap(nestedMap)
+				row[1] = valStr
+			} else {
+				row[1] = fmt.Sprintf("%v", val)
+			}
+		} else {
+			row[1] = fmt.Sprintf("%v", val)
+		}
 		twOuter.AppendRow(row)
 	}
 	twOuter.SetAlign([]text.Align{text.AlignCenter, text.AlignCenter})
@@ -50,4 +60,12 @@ func PrintDecodedToken(tokenString string) {
 	twOuter.SetTitle("Decoded JWT token")
 	twOuter.Style().Options.SeparateRows = true
 	fmt.Println(twOuter.Render())
+
+}
+func stringifyMap(m map[string]interface{}) string {
+	var result string
+	for key, val := range m {
+		result += fmt.Sprintf("%s: %s\n", key, val)
+	}
+	return result
 }
