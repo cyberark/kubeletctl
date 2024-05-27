@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	v1 "k8s.io/api/core/v1"
 	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
 	"log"
 	"net"
 	"net/http"
 	"time"
+
+	v1 "k8s.io/api/core/v1"
 )
 
 func FindContainersWithRCE(nodeIP string) Node {
@@ -25,15 +26,15 @@ func FindContainersWithRCE(nodeIP string) Node {
 
 // TODO: improve to multi-threaded
 func checkPodsForRCE(nodeIP string, pods v1.PodList) []Pod {
-	command := "cmd=ls /"
+	command := "?cmd=ls"
 	var nodePods []Pod
 
 	for _, pod := range pods.Items {
 		var podContainers []Container
 		for _, container := range pod.Spec.Containers {
 			containerRCERun := false
-			apiPathUrl := fmt.Sprintf("%s://%s:%s%s/%s/%s/%s", cmd.ProtocolScheme, nodeIP, cmd.PortFlag, api.RUN, pod.Namespace, pod.Name, container.Name)
-			resp, err := api.PostRequest(api.GlobalClient, apiPathUrl, []byte(command))
+			apiPathUrl := fmt.Sprintf("%s://%s:%s%s/%s/%s/%s%s", cmd.ProtocolScheme, nodeIP, cmd.PortFlag, api.RUN, pod.Namespace, pod.Name, container.Name, command)
+			resp, err := api.PostRequest(api.GlobalClient, apiPathUrl, []byte{})
 
 			// TODO: check if this check is enough
 			if err == nil && resp != nil && resp.StatusCode == http.StatusOK {

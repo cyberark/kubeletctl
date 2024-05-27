@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@ import (
 	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
 	"kubeletctl/pkg/utils"
+	"net/url" // import the url package
 	"os"
 
 	"github.com/spf13/cobra"
@@ -55,13 +56,21 @@ var runCmd = &cobra.Command{
 			inputArgs = args[0]
 		}
 
+		var command string
+		if inputArgs != "" {
+			command = "?cmd=" + url.QueryEscape(inputArgs)
+		} else {
+			fmt.Println("[*] No command was set, setting default command 'ls'")
+			command = "?cmd=ls"
+		}
+
 		// TODO: check if it can handle multiple commands like: "bin/bash -c “/bin/bash”
 		// https://www.openshift.com/blog/executing-commands-in-pods-using-k8s-api
 		var apiPathUrl string
 		if utils.AreNamespacePodAndContainerFlagsSet(cmd.NamespaceFlag, cmd.PodFlag, cmd.ContainerFlag) {
-			apiPathUrl = fmt.Sprintf("%s%s/%s/%s/%s", cmd.ServerFullAddressGlobal, api.RUN, cmd.NamespaceFlag, cmd.PodFlag, cmd.ContainerFlag)
+			apiPathUrl = fmt.Sprintf("%s%s/%s/%s/%s%s", cmd.ServerFullAddressGlobal, api.RUN, cmd.NamespaceFlag, cmd.PodFlag, cmd.ContainerFlag, command)
 		} else if cmd.PodUidFlag != "" {
-			apiPathUrl = fmt.Sprintf("%s%s/%s/%s/%s/%s", cmd.ServerFullAddressGlobal, api.RUN, cmd.NamespaceFlag, cmd.PodFlag, cmd.PodUidFlag, cmd.ContainerFlag)
+			apiPathUrl = fmt.Sprintf("%s%s/%s/%s/%s/%s%s", cmd.ServerFullAddressGlobal, api.RUN, cmd.NamespaceFlag, cmd.PodFlag, cmd.PodUidFlag, cmd.ContainerFlag, command)
 		} else if allPodsFlag {
 			fmt.Println("[*] Running command on all pods")
 		} else {
@@ -69,18 +78,10 @@ var runCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		var command string
-		if inputArgs != "" {
-			command = "cmd=" + inputArgs
-		} else {
-			fmt.Println("[*] No command was set, setting default command 'ls /'")
-			command = "cmd=ls /"
-		}
-
 		if allPodsFlag {
 			utils.RunCommandOnAllPodsInANode(cmd.ServerIpAddressFlag, command)
 		} else {
-			resp, err := api.PostRequest(api.GlobalClient, apiPathUrl, []byte(command))
+			resp, err := api.PostRequest(api.GlobalClient, apiPathUrl, []byte{})
 			cmd.PrintPrettyHttpResponse(resp, err)
 		}
 	},

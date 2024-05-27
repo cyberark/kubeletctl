@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+  labels:
+    app: test
+spec:
+  containers:
+  - name: test-container
+    image: nginx:latest
+    env:
+    - name: SECRET_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: test-secret
+          key: token
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: test-secret
+type: Opaque
+data:
+  token: dGhpcy1pcy1hLXRlc3QtdG9rZW4=  # Base64 encoded value of "this-is-a-test-token"
