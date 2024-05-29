@@ -3,6 +3,8 @@ package utils
 import (
 	"fmt"
 
+	"strings"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
@@ -41,10 +43,16 @@ func PrintDecodedToken(tokenString string) {
 	for key, val := range *claims {
 		row := make(table.Row, 2)
 		row[0] = key
-		if key == "kubernetes.io" {
+		if key == "kubernetes.io" || key == "aud" {
 			if nestedMap, ok := val.(map[string]interface{}); ok {
-				valStr := stringifyMap(nestedMap)
+				valStr := stringifyMap(nestedMap, 0)
 				row[1] = valStr
+			} else if lineSlice, ok := val.([]interface{}); ok {
+				lineStr := ""
+				for _, aud := range lineSlice {
+					lineStr += fmt.Sprintf("%v\n", aud)
+				}
+				row[1] = lineStr
 			} else {
 				row[1] = fmt.Sprintf("%v", val)
 			}
@@ -53,7 +61,8 @@ func PrintDecodedToken(tokenString string) {
 		}
 		twOuter.AppendRow(row)
 	}
-	twOuter.SetAlign([]text.Align{text.AlignCenter, text.AlignCenter})
+	//twOuter.SetAlign([]text.Align{text.AlignCenter, text.AlignCenter})
+	twOuter.SetAlign([]text.Align{text.AlignLeft, text.AlignLeft})
 	//twOuter.SetStyle(table.StyleLight)
 	twOuter.SetStyle(table.StyleRounded)
 	twOuter.Style().Title.Align = text.AlignCenter
@@ -62,10 +71,16 @@ func PrintDecodedToken(tokenString string) {
 	fmt.Println(twOuter.Render())
 
 }
-func stringifyMap(m map[string]interface{}) string {
-	var result string
+func stringifyMap(m map[string]interface{}, indent int) string {
+	var result strings.Builder
+	indentation := strings.Repeat("  ", indent)
 	for key, val := range m {
-		result += fmt.Sprintf("%s: %s\n", key, val)
+		switch v := val.(type) {
+		case map[string]interface{}:
+			result.WriteString(fmt.Sprintf("%s%s:\n%s", indentation, key, stringifyMap(v, indent+1)))
+		default:
+			result.WriteString(fmt.Sprintf("%s%s: %v\n", indentation, key, v))
+		}
 	}
-	return result
+	return result.String()
 }

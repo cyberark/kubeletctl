@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
 	"log"
@@ -69,7 +69,7 @@ func GetPodListFromNodeIP(nodeIP string) (v1.PodList, error) {
 		fmt.Printf("[*] Failed to get pods from: %s\n", nodeIP)
 	} else {
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Printf("[*] Failed to read pods JSON from: %s\n", nodeIP)
 		} else {
@@ -97,7 +97,7 @@ func getNodeWithPodsRCECheck(nodeIP string) Node {
 		fmt.Printf("[*] Failed to get pods from: %s\n", nodeIP)
 	} else {
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			fmt.Printf("[*] Failed to read pods JSON from: %s\n", nodeIP)
 		} else {

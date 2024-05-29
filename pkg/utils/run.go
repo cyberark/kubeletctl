@@ -6,7 +6,7 @@ package utils
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
 	"net/http"
@@ -92,7 +92,7 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 			if err == nil && resp != nil {
 				statusCode = resp.StatusCode
 
-				bodyBytes, err := ioutil.ReadAll(resp.Body)
+				bodyBytes, err := io.ReadAll(resp.Body)
 				if err == nil {
 					output = string(bodyBytes)
 				}
@@ -186,7 +186,7 @@ func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
 			if err == nil && resp != nil {
 				statusCode = resp.StatusCode
 
-				bodyBytes, err := ioutil.ReadAll(resp.Body)
+				bodyBytes, err := io.ReadAll(resp.Body)
 				if err == nil {
 					output = string(bodyBytes)
 				}
