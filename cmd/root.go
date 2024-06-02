@@ -2,14 +2,14 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
-	"io/ioutil"
-	restclient "k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 	"kubeletctl/pkg/api"
 	"log"
 	"net/url"
 	"os"
+
+	"github.com/spf13/cobra"
+	restclient "k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 var (
@@ -34,7 +34,9 @@ var (
 )
 
 // TODO: Consider the use of "go-prompt" for auto-completion of dynamic resources like pods
-//  Linke: https://github.com/c-bata/go-prompt
+//
+//	Linke: https://github.com/c-bata/go-prompt
+//
 // Current auto completion in cobra is only for bash: https://github.com/spf13/cobra/blob/master/bash_completions.md
 var RootCmd = &cobra.Command{
 	Use:   "kubeletctl",
@@ -86,7 +88,7 @@ func Execute() {
 
 // List of command examples:
 // https://github.com/kubernetes/kubernetes/blob/14344b57e56258e87cbe80c8cd80399855eca424/pkg/kubelet/server/auth_test.go#L110-L143
-//https://towardsdatascience.com/how-to-create-a-cli-in-golang-with-cobra-d729641c7177
+// https://towardsdatascience.com/how-to-create-a-cli-in-golang-with-cobra-d729641c7177
 func init() {
 	cobra.OnInitialize(initConfig)
 
@@ -113,7 +115,7 @@ func init() {
 }
 
 func readTokenFromFile(filePath string) string {
-	data, err := ioutil.ReadFile(filePath)
+	data, err := os.ReadFile(filePath)
 	if err != nil {
 		fmt.Print("[*] Failed to read file")
 		log.Fatal(err)

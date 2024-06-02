@@ -3,13 +3,14 @@ package proxy
 import (
 	"bytes"
 	"fmt"
-	"github.com/spf13/cobra"
-	"io/ioutil"
+	"io"
 	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
 	"kubeletctl/pkg/utils"
 	"log"
 	"os"
+
+	"github.com/spf13/cobra"
 )
 
 var checkpointCmd = &cobra.Command{
@@ -40,11 +41,11 @@ var checkpointCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatal(err)
 		}
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+		resp.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 		cmd.PrintPrettyHttpResponse(resp, err)
 
 	},
