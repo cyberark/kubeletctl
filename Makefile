@@ -11,7 +11,7 @@ all:
 	GOARCH=arm64 GOOS=linux go build -v -o $(BUILD_DIR)/kubeletctl_linux_arm64;
 	GOARCH=386 GOOS=windows go build -v -o $(BUILD_DIR)/kubeletctl_windows_386.exe;
 	GOARCH=amd64 GOOS=windows go build -v -o $(BUILD_DIR)/kubeletctl_windows_amd64.exe;
-	# GOARCH=386 GOOS=darwin go build -v -o $(BUILD_DIR)/kubeletctl_darwin_386; # Commented as Darwin 386 builds may not be supported
+# GOARCH=386 GOOS=darwin go build -v -o $(BUILD_DIR)/kubeletctl_darwin_386;
 	GOARCH=amd64 GOOS=darwin go build -v -o $(BUILD_DIR)/kubeletctl_darwin_amd64;
 	GOARCH=arm64 GOOS=darwin go build -v -o $(BUILD_DIR)/kubeletctl_darwin_arm64;
 	
@@ -36,7 +36,7 @@ windows_amd64:
 
 darwin: darwin_amd64 darwin_arm64
 
-# darwin_386: # Commented out as macOS 386 builds may not be applicable
+# darwin_386:
 # 	GOARCH=386 GOOS=darwin go build -v -o $(BUILD_DIR)/kubeletctl_darwin_386;
 
 darwin_amd64:
