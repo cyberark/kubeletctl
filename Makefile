@@ -1,4 +1,4 @@
-.PHONY: all $(PLATFORMS) clean linux windows darwin docker docker-release
+.PHONY: all clean linux windows darwin docker docker-release
 
 BUILD_DIR=build
 
