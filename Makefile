@@ -2,7 +2,7 @@
 
 BUILD_DIR=build
 
-all: linux	windows darwin
+all: linux windows darwin
 	
 linux: linux_386 linux_amd64 linux_arm64
 
