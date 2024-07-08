@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,14 +19,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
-	"io/ioutil"
-	v1 "k8s.io/api/core/v1"
+	"io"
 	"kubeletctl/cmd"
 	"kubeletctl/pkg/api"
 	"log"
 	"net/http/httputil"
 	"os"
+
+	"github.com/spf13/cobra"
+	v1 "k8s.io/api/core/v1"
 )
 
 // podsCmd represents the pods command
@@ -56,11 +57,11 @@ var podsCmd = &cobra.Command{
 				os.Exit(1)
 			}
 
-			bodyBytes, err := ioutil.ReadAll(resp.Body)
+			bodyBytes, err := io.ReadAll(resp.Body)
 			if err != nil {
 				log.Fatal(err)
 			}
-			resp.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+			resp.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 			var pods v1.PodList
 			err = json.Unmarshal(bodyBytes, &pods)
 
