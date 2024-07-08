@@ -75,7 +75,8 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 
 	// keen an index and loop through every Url we will send a request to
 	for i, podInfo := range runPodsInfo {
-
+		localI := i
+		localPodInfo := podInfo
 		// start a go routine with the index and Url in a closure
 		go func(i int, podInfo RunPodInfo) {
 
@@ -108,7 +109,7 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 			// another goroutine to start
 			<-semaphoreChan
 
-		}(i, podInfo)
+		}(localI, localPodInfo)
 	}
 
 	// start listening for any results over the resultsChan
@@ -169,7 +170,8 @@ func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
 
 	// keen an index and loop through every Url we will send a request to
 	for i, podInfo := range runPodsInfo {
-
+		localI := i
+		localPodInfo := podInfo
 		// start a go routine with the index and Url in a closure
 		go func(i int, podInfo RunPodInfo) {
 
@@ -202,7 +204,7 @@ func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
 			// another goroutine to start
 			<-semaphoreChan
 
-		}(i, podInfo)
+		}(localI, localPodInfo)
 	}
 
 	// start listening for any results over the resultsChan
