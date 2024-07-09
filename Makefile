@@ -2,18 +2,7 @@
 
 BUILD_DIR=build
 
-all:
-	go mod vendor;
-	go fmt ./...;
-	mkdir -p $(BUILD_DIR);
-	GOARCH=386 GOOS=linux go build -v -o $(BUILD_DIR)/kubeletctl_linux_386;
-	GOARCH=amd64 GOOS=linux go build -v -o $(BUILD_DIR)/kubeletctl_linux_amd64;
-	GOARCH=arm64 GOOS=linux go build -v -o $(BUILD_DIR)/kubeletctl_linux_arm64;
-	GOARCH=386 GOOS=windows go build -v -o $(BUILD_DIR)/kubeletctl_windows_386.exe;
-	GOARCH=amd64 GOOS=windows go build -v -o $(BUILD_DIR)/kubeletctl_windows_amd64.exe;
-# GOARCH=386 GOOS=darwin go build -v -o $(BUILD_DIR)/kubeletctl_darwin_386;
-	GOARCH=amd64 GOOS=darwin go build -v -o $(BUILD_DIR)/kubeletctl_darwin_amd64;
-	GOARCH=arm64 GOOS=darwin go build -v -o $(BUILD_DIR)/kubeletctl_darwin_arm64;
+all: linux windows darwin
 	
 linux: linux_386 linux_amd64 linux_arm64
 
