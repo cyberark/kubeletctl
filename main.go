@@ -4,6 +4,7 @@ import (
 	"kubeletctl/cmd"
 	_ "kubeletctl/cmd/log"
 	_ "kubeletctl/cmd/metrics"
+	_ "kubeletctl/cmd/pid2pod"
 	_ "kubeletctl/cmd/proxy"
 	_ "kubeletctl/cmd/proxy/debug"
 	_ "kubeletctl/cmd/proxy/healthz"
