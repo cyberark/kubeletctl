@@ -18,8 +18,10 @@ package pid2pod
 import (
 	"bufio"
 	"fmt"
+	"github.com/jedib0t/go-pretty/table"
 	"os"
 	"regexp"
+	"strings"
 )
 
 // ID identifies a single container running in a Kubernetes Pod
@@ -31,16 +33,25 @@ type ID struct {
 }
 
 // LookupPod looks up a process ID from the host PID namespace, returning its Kubernetes identity.
-func LookupPod(pid int, podInfo *podList) (*ID, error) {
+func LookupPod(pid int, executable string, podInfo *podList, tw table.Writer) (*ID, error) {
 	cid, err := LookupContainerID(pid)
 	if err != nil {
 		return nil, err
 	}
 
-	containerID := fmt.Sprintf("%s://%s", "containerd", cid)
+	var containerRuntime string
+	pidAndProcExecutable := fmt.Sprintf("%d (%s)", pid, executable)
 	for _, item := range podInfo.Items {
 		for _, status := range item.Status.ContainerStatuses {
+			if strings.Contains(status.ContainerID, "containerd") {
+				containerRuntime = "containerd"
+			}
+			if strings.Contains(status.ContainerID, "docker") {
+				containerRuntime = "docker"
+			}
+			containerID := fmt.Sprintf("%s://%s", containerRuntime, cid)
 			if status.ContainerID == containerID {
+				tw.AppendRow([]interface{}{pidAndProcExecutable, item.Metadata.Name, item.Metadata.Namespace, status.Name})
 				return &ID{
 					Namespace: item.Metadata.Namespace,
 					PodName:   item.Metadata.Name,
@@ -68,7 +79,9 @@ func LookupContainerID(pid int) (string, error) {
 		line := scanner.Text()
 		parts := kubePattern.FindStringSubmatch(line)
 		if parts != nil {
-			return parts[1], nil
+			if len(parts) > 1 {
+				return parts[1], nil
+			}
 		}
 	}
 	return "", nil

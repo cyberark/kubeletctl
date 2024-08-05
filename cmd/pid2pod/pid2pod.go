@@ -19,6 +19,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/jedib0t/go-pretty/table"
+	"github.com/jedib0t/go-pretty/text"
 	"github.com/mitchellh/go-ps"
 	"io"
 	"kubeletctl/cmd"
@@ -87,6 +89,9 @@ var pid2podCmd = &cobra.Command{
 				// TODO: this function does some of the previous checks, consider modification
 				cmd.PrintPrettyHttpResponse(resp, err)
 			} else {
+				tw := table.NewWriter()
+				tw.AppendHeader(table.Row{"PID", "POD", "NAMESPACE", "CONTAINERS"})
+
 				// get system all processes
 				processes, err := ps.Processes()
 				if err != nil {
@@ -96,34 +101,46 @@ var pid2podCmd = &cobra.Command{
 					if pidFlag != 0 {
 						if pidFlag == proc.Pid() {
 							pid = pidFlag
-							printPid2Pod(pid, proc.Executable(), podInfo)
+							printPid2Pod(pid, proc.Executable(), podInfo, tw)
 						}
 					} else {
 						pid = proc.Pid()
-						printPid2Pod(pid, proc.Executable(), podInfo)
+						printPid2Pod(pid, proc.Executable(), podInfo, tw)
 					}
+				}
+				tw.SetTitle("Pods from Pid")
+				tw.SetStyle(table.StyleLight)
+				tw.Style().Title.Align = text.AlignCenter
+				tw.SetAutoIndex(true)
+				tw.Style().Options.SeparateRows = true
+				if displayFlag == "table" {
+					fmt.Println(tw.Render())
 				}
 			}
 		}
 	},
 }
 
-func printPid2Pod(pid int, executable string, podInfo *podList) {
-	id, err := LookupPod(pid, podInfo)
+func printPid2Pod(pid int, executable string, podInfo *podList, tw table.Writer) {
+	id, err := LookupPod(pid, executable, podInfo, tw)
 	if err != nil {
 		log.Fatalf("could not get ID of process %d: %v", pid, err)
 	}
 	if id != nil {
-		fmt.Printf("PID %d (%s): %+#v\n", pid, executable, id)
+		if displayFlag == "raw" {
+			fmt.Printf("PID %d (%s): %+#v\n", pid, executable, id)
+		}
 	}
 }
 
 var (
-	pidFlag int
-	pid     int
+	pidFlag     int
+	pid         int
+	displayFlag string
 )
 
 func init() {
 	cmd.RootCmd.AddCommand(pid2podCmd)
 	pid2podCmd.PersistentFlags().IntVarP(&pidFlag, "pid", "", 0, "Name of pid to look.")
+	pid2podCmd.PersistentFlags().StringVarP(&displayFlag, "display", "", "table", "Data display mode, [raw、table].")
 }
