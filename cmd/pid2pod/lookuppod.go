@@ -46,13 +46,11 @@ func LookupPod(pid int, executable string, podInfo *podList, tw table.Writer) (*
 		for _, status := range item.Status.ContainerStatuses {
 			for _, extractedID := range containerIDs {
 				var runtime string
-				if strings.HasPrefix(status.ContainerID, "docker://") {
-					runtime = "docker"
-				} else if strings.HasPrefix(status.ContainerID, "containerd://") {
+				if strings.Contains(status.ContainerID, "containerd") {
 					runtime = "containerd"
-				} else {
-					fmt.Printf("Unknown runtime for Pod ContainerID: %s\n", status.ContainerID)
-					continue
+				}
+				if strings.Contains(status.ContainerID, "docker") {
+					runtime = "docker"
 				}
 
 				formattedContainerID := fmt.Sprintf("%s://%s", runtime, extractedID)
