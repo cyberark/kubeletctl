@@ -1,12 +1,9 @@
 /*
 Copyright (c) 2020 CyberArk Software Ltd. All rights reserved
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
 	http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,10 +15,11 @@ package pid2pod
 import (
 	"bufio"
 	"fmt"
-	"github.com/jedib0t/go-pretty/table"
 	"os"
 	"regexp"
 	"strings"
+
+	"github.com/jedib0t/go-pretty/table"
 )
 
 // ID identifies a single container running in a Kubernetes Pod
@@ -32,32 +30,39 @@ type ID struct {
 	ContainerName string
 }
 
-// LookupPod looks up a process ID from the host PID namespace, returning its Kubernetes identity.
 func LookupPod(pid int, executable string, podInfo *podList, tw table.Writer) (*ID, error) {
-	cid, err := LookupContainerID(pid)
+	containerIDs, err := LookupContainerID(pid)
 	if err != nil {
 		return nil, err
 	}
 
-	var containerRuntime string
+	if len(containerIDs) == 0 {
+		return nil, nil
+	}
+
 	pidAndProcExecutable := fmt.Sprintf("%d (%s)", pid, executable)
+
 	for _, item := range podInfo.Items {
 		for _, status := range item.Status.ContainerStatuses {
-			if strings.Contains(status.ContainerID, "containerd") {
-				containerRuntime = "containerd"
-			}
-			if strings.Contains(status.ContainerID, "docker") {
-				containerRuntime = "docker"
-			}
-			containerID := fmt.Sprintf("%s://%s", containerRuntime, cid)
-			if status.ContainerID == containerID {
-				tw.AppendRow([]interface{}{pidAndProcExecutable, item.Metadata.Name, item.Metadata.Namespace, status.Name})
-				return &ID{
-					Namespace: item.Metadata.Namespace,
-					PodName:   item.Metadata.Name,
-					//ContainerID:   cid,
-					ContainerName: status.Name,
-				}, nil
+			for _, extractedID := range containerIDs {
+				var runtime string
+				if strings.Contains(status.ContainerID, "containerd") {
+					runtime = "containerd"
+				}
+				if strings.Contains(status.ContainerID, "docker") {
+					runtime = "docker"
+				}
+
+				formattedContainerID := fmt.Sprintf("%s://%s", runtime, extractedID)
+
+				if status.ContainerID == formattedContainerID {
+					tw.AppendRow([]interface{}{pidAndProcExecutable, item.Metadata.Name, item.Metadata.Namespace, status.Name})
+					return &ID{
+						Namespace:     item.Metadata.Namespace,
+						PodName:       item.Metadata.Name,
+						ContainerName: status.Name,
+					}, nil
+				}
 			}
 		}
 	}
@@ -66,25 +71,27 @@ func LookupPod(pid int, executable string, podInfo *podList, tw table.Writer) (*
 
 // LookupContainerID looks up a process ID from the host PID namespace,
 // returning its Docker and Containerd container ID.
-func LookupContainerID(pid int) (string, error) {
+func LookupContainerID(pid int) ([]string, error) {
 	f, err := os.Open(fmt.Sprintf("/proc/%d/cgroup", pid))
 	if err != nil {
-		// this is normal, it just means the PID no longer exists
-		return "", nil
+		return nil, nil // PID might not exist
 	}
 	defer f.Close()
 
+	var containerIDs []string
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
-		parts := kubePattern.FindStringSubmatch(line)
-		if parts != nil {
-			if len(parts) > 1 {
-				return parts[1], nil
+
+		// Extract all matching container IDs from the line
+		matches := kubePattern.FindAllStringSubmatch(line, -1)
+		for _, match := range matches {
+			if len(match) > 1 {
+				containerIDs = append(containerIDs, match[1])
 			}
 		}
 	}
-	return "", nil
+	return containerIDs, nil
 }
 
 var (
