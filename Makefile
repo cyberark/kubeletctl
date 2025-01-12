@@ -37,8 +37,8 @@ darwin_arm64:
 docker:
 	docker build . -t kubeletctl:latest
 
-docker-release:
-	docker build -t kubeletctl:release -f Dockerfile.latest .
+#docker-release:
+#	docker build -t kubeletctl:release -f Dockerfile.latest .
 
 clean:
 	rm -rf $(BUILD_DIR)/
