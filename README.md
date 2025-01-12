@@ -97,6 +97,8 @@ Prerequisite:
 
 To build the project run:  
 ```
+# If some of the libraries are not installed
+go mod tidy
 make -j all
 ```
 
