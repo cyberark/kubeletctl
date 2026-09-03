@@ -2,7 +2,7 @@ package utils
 
 // TODO: consider move this file to be under api package.
 // It will cause import cycling because of some of the constants use. Maybe it will be better to move the
-// constant.go to to the pgk folder.
+// constant.go to the pkg folder.
 
 import (
 	"fmt"
@@ -73,7 +73,7 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 		close(resultsChan)
 	}()
 
-	// keen an index and loop through every Url we will send a request to
+	// keep an index and loop through every Url we will send a request to
 	for i, podInfo := range runPodsInfo {
 		localI := i
 		localPodInfo := podInfo
@@ -104,7 +104,7 @@ func runParallelCommandsOnPods(runPodsInfo []RunPodInfo, concurrencyLimit int, c
 
 			// now we can send the Result struct through the resultsChan
 			resultsChan <- result
-			// once we're done it's we read from the semaphoreChan which
+			// once we're done it's time we read from the semaphoreChan which
 			// has the effect of removing one from the limit and allowing
 			// another goroutine to start
 			<-semaphoreChan
@@ -168,7 +168,7 @@ func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
 		close(resultsChan)
 	}()
 
-	// keen an index and loop through every Url we will send a request to
+	// keep an index and loop through every Url we will send a request to
 	for i, podInfo := range runPodsInfo {
 		localI := i
 		localPodInfo := podInfo
@@ -199,7 +199,7 @@ func getAndPrintTokens(runPodsInfo []RunPodInfo, concurrencyLimit int) {
 
 			// now we can send the Result struct through the resultsChan
 			resultsChan <- result
-			// once we're done it's we read from the semaphoreChan which
+			// once we're done it's time we read from the semaphoreChan which
 			// has the effect of removing one from the limit and allowing
 			// another goroutine to start
 			<-semaphoreChan

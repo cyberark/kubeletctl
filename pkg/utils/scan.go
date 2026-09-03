@@ -211,7 +211,7 @@ func boundedParallelGet(urls []string, concurrencyLimit int, scanMode ScanMode) 
 		close(resultsChan)
 	}()
 
-	// keen an index and loop through every Url we will send a request to
+	// keep an index and loop through every Url we will send a request to
 	for i, url := range urls {
 
 		// start a go routine with the index and Url in a closure
@@ -240,7 +240,7 @@ func boundedParallelGet(urls []string, concurrencyLimit int, scanMode ScanMode) 
 					kubeletUrlAddress = fmt.Sprintf("%s://%s:%s%s", cmd.ProtocolScheme, ipAddress, cmd.PortFlag, api.HEALTHZ)
 					// send the request and put the response in a Result struct
 					// along with the index so we can sort them later along with
-					// any error that might have occoured
+					// any error that might have occurred
 					resp, err = api.GetRequest(api.GlobalClient, kubeletUrlAddress)
 					if resp != nil {
 						statusCode = resp.StatusCode
@@ -253,7 +253,7 @@ func boundedParallelGet(urls []string, concurrencyLimit int, scanMode ScanMode) 
 
 			// now we can send the Result struct through the resultsChan
 			resultsChan <- result
-			// once we're done it's we read from the semaphoreChan which
+			// once we're done it's time we read from the semaphoreChan which
 			// has the effect of removing one from the limit and allowing
 			// another goroutine to start
 			<-semaphoreChan

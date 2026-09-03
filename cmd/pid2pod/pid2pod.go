@@ -142,5 +142,5 @@ var (
 func init() {
 	cmd.RootCmd.AddCommand(pid2podCmd)
 	pid2podCmd.PersistentFlags().IntVarP(&pidFlag, "pid", "", 0, "Name of pid to look.")
-	pid2podCmd.PersistentFlags().StringVarP(&displayFlag, "display", "", "table", "Data display mode, [raw、table].")
+	pid2podCmd.PersistentFlags().StringVarP(&displayFlag, "display", "", "table", "Data display mode, [raw, table].")
 }

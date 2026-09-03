@@ -29,9 +29,9 @@ var criCmd = &cobra.Command{
   Run commands inside a container through the Container Runtime Interface (CRI).
   This is already implemented as part of the "/exec". 
   This might be *deprecated*, but in the past after executing the "/exec" command you received a 302 redirection id,
-  you then use this id to together with the command you want. 
+  you then use this id together with the command you want. 
   
-  In the past you would needed to run something like that to receive 302 redirection value:
+  In the past you would need to run something like that to receive 302 redirection value:
     curl -k -v -H "X-Stream-Protocol-Version: v2.channel.k8s.io" \
     		   -H "X-Stream-Protocol-Version: channel.k8s.io" \
     		   -X POST "https://<node_ip>:10250/exec/<namespace>/<pod>/<container>?command=env&input=1&output=1&tty=1"

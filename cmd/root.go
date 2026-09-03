@@ -35,14 +35,14 @@ var (
 
 // TODO: Consider the use of "go-prompt" for auto-completion of dynamic resources like pods
 //
-//	Linke: https://github.com/c-bata/go-prompt
+//	Link: https://github.com/c-bata/go-prompt
 //
 // Current auto completion in cobra is only for bash: https://github.com/spf13/cobra/blob/master/bash_completions.md
 var RootCmd = &cobra.Command{
 	Use:   "kubeletctl",
-	Short: "kubeletctl is command line utitly that implements kuebelt's API",
+	Short: "kubeletctl is command line utility that implements kubelet's API",
 	Long: `Description:
-  kubeletctl is command line utility that implements kuebelt's API.
+  kubeletctl is command line utility that implements kubelet's API.
   It also provides scanning for opened kubelet APIs and search for potential RCE on containers.
   
   You can view examples from each command by using the -h\--help flag like that: kubeletctl run -h
@@ -62,7 +62,7 @@ var RootCmd = &cobra.Command{
     // Searching for pods/containers vulnerable to RCE
     kubeletctl scan rce --server 123.123.123.123 
 
-    // Run "ls /" command on pod my-nginx-pod/nginx in thedefault namespace
+    // Run "ls /" command on pod my-nginx-pod/nginx in the default namespace
     kubeletctl run "ls /" --namespace default --pod my-nginx-pod --container nginx --server 123.123.123.123 
 
     // Run "ls /" command on all existing pods in a node
