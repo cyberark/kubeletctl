@@ -91,5 +91,5 @@ var allPodsFlag bool
 
 func init() {
 	cmd.RootCmd.AddCommand(runCmd)
-	runCmd.PersistentFlags().BoolVarP(&allPodsFlag, "all-pods", "", false, "It will search for all the pods in the node and run the command on everyone")
+	runCmd.PersistentFlags().BoolVarP(&allPodsFlag, "all-pods", "", false, "It will search for all the pods in the node and run the command on every one")
 }

@@ -44,7 +44,7 @@ var debugCmd = &cobra.Command{
     /debug/pprof/trace
     /debug/pprof/trace?seconds=5    // collect 5-second execution trace
     /debug/pprof/block              // look at the goroutine blocking profile
-    /debug/pprof/mutex              // look at the holderse of contended mutexes
+    /debug/pprof/mutex              // look at the holders of contended mutexes
     /debug/pprof/heap               // look at the heap profile
   
   Profile Descriptions:	
